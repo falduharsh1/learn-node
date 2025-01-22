@@ -8,4 +8,4 @@ console.log(os.platform());
 
 console.log(os.arch());
 
-console.log(os.userInfo());
+console.log(os.userInfo())

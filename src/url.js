@@ -10,6 +10,6 @@ console.log(url.format({
       page: 1,
       format: 'json',
     },
-  }));
+  }))
 
 console.log(url.resolve('http://harsh.com/', '/india'));
