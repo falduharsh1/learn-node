@@ -1,31 +1,34 @@
+const router = require('./routes/api/v1');
+
 require('dotenv').config()
 
 const express = require('express')
 const app = express()
 
-app.get('/product', (req, res) => {
-    res.send('Hello Worldd!')
-  })
+//   app.get('/product', (req, res) => {
+//     res.send('Hello Worldd!')
+//   })
 
-  app.post('/product', (req, res) => {
-    res.send('Got a POST request')
-  })
+//   app.post('/product', (req, res) => {
+//     res.send('Got a POST request')
+//   })
 
-  app.put('/product:id', (req, res) => {
-    res.send('Got a PUT request at /user')
-  })
+//   app.put('/product/:id', (req, res) => {
+//     res.send('Got a PUT request at /user')
+//   })
 
-  app.delete('/product:id', (req, res) => {
-    res.send('Got a DELETE request at /user')
-  })
+//   app.delete('/product/:id', (req, res) => {
+//     res.send('Got a DELETE request at /user')
+//   })
 
-  app.listen(8000, () => {
-    console.log(`Example app listening on port`)
-  })
-  
 
-console.log()
 
-console.log("hello node !",process.env.PORT);
+app.use('/api/v1', router)
+
+app.listen(process.env.PORT, () => {
+  console.log(`Example app listening on port`)
+})
+
+console.log("hello node !", );
 
 
