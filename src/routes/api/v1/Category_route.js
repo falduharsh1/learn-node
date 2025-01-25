@@ -1,21 +1,18 @@
 const express = require('express')
+const { Category_controller } = require('../../../controller/index.js')
 
 const category = express.Router()
 
 // localhost:4000/api/v1/category/get-category
 category.get(
     '/get-category',
-    (req,res) => {
-        res.send('Get a Category')
-    }
+    Category_controller.getCategory
 )
 
 // localhost:4000/api/v1/category/post-category
 category.post(
     '/post-category',
-    (req,res) => {
-        res.send('Post a Category')
-    }
+    Category_controller.addCategory
 )
 
 // localhost:4000/api/v1/category/put-category/:id

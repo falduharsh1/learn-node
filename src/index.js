@@ -1,3 +1,4 @@
+const connectDB = require('./Db/mongoDB');
 const router = require('./routes/api/v1');
 
 require('dotenv').config()
@@ -21,7 +22,7 @@ const app = express()
 //     res.send('Got a DELETE request at /user')
 //   })
 
-
+connectDB()
 
 app.use('/api/v1', router)
 
