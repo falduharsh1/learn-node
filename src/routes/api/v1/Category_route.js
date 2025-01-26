@@ -18,17 +18,13 @@ category.post(
 // localhost:4000/api/v1/category/put-category/:id
 category.put(
     '/put-category/:id',
-    (req,res) => {
-        res.send('Put a Category')
-    }
+    Category_controller.putCategory
 )
 
 // localhost:4000/api/v1/category/delete-category/:id
 category.delete(
     '/delete-category/:id',
-    (req,res) => {
-        res.send('delete a Category')
-    }
+    Category_controller.deleteCategory
 )
 
 module.exports = category

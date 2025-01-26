@@ -1,37 +1,30 @@
 const express = require('express')
+const { subCategory_controller } = require('../../../controller')
 
 const subcategory = express.Router()
 
 // localhost:4000/api/v1/subcategory/get-subcategory
 subcategory.get(
     '/get-subcategory',
-    (req,res) => {
-        res.send('Get a subcategory')
-    }
+    subCategory_controller.getSubCategory
 )
 
 // localhost:4000/api/v1/subcategory/post-subcategory
 subcategory.post(
     '/post-subcategory',
-    (req,res) => {
-        res.send('Post a subcategory')
-    }
+    subCategory_controller.addSubCategory
 )
 
 // localhost:4000/api/v1/subcategory/put-subcategory/:id
 subcategory.put(
     '/put-subcategory/:id',
-    (req,res) => {
-        res.send('Put a subcategory')
-    }
+    subCategory_controller.putSubCategory
 )
 
 // localhost:4000/api/v1/subcategory/delete-subcategory/:id
 subcategory.delete(
     '/delete-subcategory/:id',
-    (req,res) => {
-        res.send('delete a subcategory')
-    }
+    subCategory_controller.deleteSubCategory
 )
 
 module.exports = subcategory

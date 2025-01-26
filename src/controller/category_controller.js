@@ -15,7 +15,26 @@ const addCategory = (req,res) => {
     }
 }
 
+const putCategory = (req,res) => {
+    try {
+        res.send('Put a Category')
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+const deleteCategory = (req,res) => {
+    try {
+        res.send('Delete a Category')
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
     getCategory,
-    addCategory
+    addCategory,
+    putCategory,
+    deleteCategory
 }
