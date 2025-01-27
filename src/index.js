@@ -4,7 +4,9 @@ const router = require('./routes/api/v1');
 require('dotenv').config()
 
 const express = require('express')
-const app = express()
+const app = express();
+
+app.use(express.json())
 
 //   app.get('/product', (req, res) => {
 //     res.send('Hello Worldd!')

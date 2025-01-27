@@ -1,3 +1,4 @@
+const Categories = require("../models/category_modele");
 
 const getCategory = (req,res) => {
     try {
@@ -7,11 +8,36 @@ const getCategory = (req,res) => {
     }
 }
 
-const addCategory = (req,res) => {
+const addCategory = async (req,res) => {
     try {
-        res.send('Post a Category')
+
+        console.log(req.body);
+        
+        const category = await Categories.create(req.body)
+         
+        if(!category){
+            return res.status(400)
+            .json({
+                success : false,
+                data : [],
+                message : 'unsuccessfull'
+            })
+        }
+
+        return res.status(200)
+        .json({
+            success : true,
+            data : category,
+            message : 'Data Pass'
+        })
+
     } catch (error) {
-        console.log(error);
+        return res.status(501)
+        .json({
+            success : false,
+            data : [],
+            message : 'error in server' + error.message
+        })
     }
 }
 
@@ -20,7 +46,6 @@ const putCategory = (req,res) => {
         res.send('Put a Category')
     } catch (error) {
         console.log(error);
-        
     }
 }
 
