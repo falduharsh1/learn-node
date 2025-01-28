@@ -1,3 +1,4 @@
+const Products = require("../models/product_modele");
 
 const getProduct= (req,res) => {
     try {
@@ -8,11 +9,33 @@ const getProduct= (req,res) => {
 
 }
 
-const addProduct= (req,res) => {
+const addProduct = async (req,res) => {
     try {
-        res.send('Add a Product')
+        const Product = await Products.create(req.body)
+
+        if(!Product){
+            return res.status(400)
+            .json({
+                success : false,
+                data : [],
+                message : 'unsuccessFull'
+            })
+        }
+
+        return res.status(200)
+       .json({
+            success : true,
+            data : Product,
+            message : 'Data pass'
+       })
+
     } catch (error) {
-        console.log(error);
+        return res.status(500)
+            .json({
+                success : false,
+                data : [],
+                message : 'unsuccessFull'
+            })
     }
 
 }

@@ -1,3 +1,4 @@
+const SubCategoryes = require("../models/subCategory_modele");
 
 const getSubCategory = (req,res) => {
     try {
@@ -8,11 +9,35 @@ const getSubCategory = (req,res) => {
 
 }
 
-const addSubCategory = (req,res) => {
+const addSubCategory = async (req,res) => {
     try {
-        res.send('Add a SubCategory')
+
+        console.log(req.body);
+       const subCategory = await SubCategoryes.create(req.body)
+
+       if(!subCategory){
+            return res.status(400)
+            .json({
+                success : false,
+                data : [],
+                message : 'unsuccessFull'
+            })
+       }
+
+       return res.status(200)
+       .json({
+            success : true,
+            data : subCategory,
+            message : 'Data pass'
+       })
+       
     } catch (error) {
-        console.log(error);
+       return res.status(500)
+       .json({
+            success : false,
+            data : [],
+            message : 'server error' + error.message
+       })
     }
 
 }
