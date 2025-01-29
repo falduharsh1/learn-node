@@ -3,11 +3,11 @@ const mongoose = require('mongoose')
 
 const productSchema = new mongoose.Schema(
     { 
-        product_id :  { 
-                type : mongoose.Types.ObjectId,
-                ref : 'SubCategoryes',
-                required : true     
-            },
+        subCategory_id :  { 
+            type : mongoose.Types.ObjectId,
+            ref : 'SubCategoryes',
+            required : true     
+        },
         name : { 
             type: String,
             required : true,
@@ -18,6 +18,10 @@ const productSchema = new mongoose.Schema(
             type: String,
             required : true,
             trim : true,
+        },
+        product_img : {
+            type: String,
+            required : true,
         }
     },
 

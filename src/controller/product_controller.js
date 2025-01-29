@@ -11,7 +11,10 @@ const getProduct= (req,res) => {
 
 const addProduct = async (req,res) => {
     try {
-        const Product = await Products.create(req.body)
+
+        console.log(req.body, req.file);
+        
+        const Product = await Products.create({...req.body , product_img : req.file.path})
 
         if(!Product){
             return res.status(400)

@@ -1,5 +1,6 @@
 const express = require('express')
 const { Category_controller } = require('../../../controller/index.js')
+const upload = require('../../../middleware/upload.js')
 
 const category = express.Router()
 
@@ -12,6 +13,7 @@ category.get(
 // localhost:4000/api/v1/category/post-category
 category.post(
     '/post-category',
+    upload.single('cat_img'),
     Category_controller.addCategory
 )
 

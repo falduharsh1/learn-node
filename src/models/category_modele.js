@@ -12,6 +12,10 @@ const categorySchema = new mongoose.Schema(
         type: String,
         required: true,
         trim: true
+    },
+    cat_img : {
+        type: String,
+        required: true,
     }
 },
     {

@@ -1,5 +1,6 @@
 const express = require('express')
 const { subCategory_controller } = require('../../../controller')
+const upload = require('../../../middleware/upload')
 
 const subcategory = express.Router()
 
@@ -12,6 +13,7 @@ subcategory.get(
 // localhost:4000/api/v1/subcategory/post-subcategory
 subcategory.post(
     '/post-subcategory',
+    upload.single('subCat_img'),
     subCategory_controller.addSubCategory
 )
 

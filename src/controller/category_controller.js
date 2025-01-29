@@ -11,9 +11,9 @@ const getCategory = (req,res) => {
 const addCategory = async (req,res) => {
     try {
 
-        console.log(req.body);
+        console.log(req.body , req.file );
         
-        const category = await Categories.create(req.body)
+        const category = await Categories.create({...req.body , cat_img : req.file.path})
          
         if(!category){
             return res.status(400)

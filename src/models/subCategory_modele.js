@@ -9,7 +9,7 @@ const subCategorySchema = new mongoose.Schema(
         },
         name :  { 
             type: String, 
-            required : true ,
+            required : true,
             trim : true,
             unique : true
         },
@@ -17,6 +17,10 @@ const subCategorySchema = new mongoose.Schema(
             type: String, 
             required : true ,
             trim : true,
+        },
+        subCat_img : {
+            type: String,
+            required: true,
         }
     },
 

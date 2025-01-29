@@ -12,8 +12,9 @@ const getSubCategory = (req,res) => {
 const addSubCategory = async (req,res) => {
     try {
 
-        console.log(req.body);
-       const subCategory = await SubCategoryes.create(req.body)
+        console.log(req.body, req.file);
+
+       const subCategory = await SubCategoryes.create({...req.body , subCat_img : req.file.path} )
 
        if(!subCategory){
             return res.status(400)

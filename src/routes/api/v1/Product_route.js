@@ -1,5 +1,6 @@
 const express = require('express');
 const { Product_controller } = require('../../../controller');
+const upload = require('../../../middleware/upload');
 const router = express.Router();
 
 // localhost:4000/api/v1/product/get-product
@@ -11,6 +12,7 @@ router.get(
 // localhost:4000/api/v1/product/post-product
 router.post(
     '/post-product',
+    upload.single('product_img'),
     Product_controller.addProduct
 )
 
