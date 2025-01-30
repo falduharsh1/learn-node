@@ -1,5 +1,6 @@
 const connectDB = require('./Db/mongoDB');
 const router = require('./routes/api/v1');
+const  cors = require('cors')
 
 require('dotenv').config()
 
@@ -7,24 +8,13 @@ const express = require('express')
 const app = express();
 
 app.use(express.json())
-
-//   app.get('/product', (req, res) => {
-//     res.send('Hello Worldd!')
-//   })
-
-//   app.post('/product', (req, res) => {
-//     res.send('Got a POST request')
-//   })
-
-//   app.put('/product/:id', (req, res) => {
-//     res.send('Got a PUT request at /user')
-//   })
-
-//   app.delete('/product/:id', (req, res) => {
-//     res.send('Got a DELETE request at /user')
-//   })
-
+app.use(cors(corsOptions))
 connectDB()
+
+var corsOptions = {
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
 
 app.use('/api/v1', router)
 
