@@ -16,6 +16,9 @@ var corsOptions = {
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
+app.use('/public', express.static('public'))
+
+
 app.use('/api/v1', router)
 
 app.listen(process.env.PORT, () => {
