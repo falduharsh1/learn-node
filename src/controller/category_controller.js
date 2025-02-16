@@ -104,7 +104,7 @@ const putCategory = async (req, res) => {
                     })
                 }
             })
-
+            
             
              category = await Categories.findByIdAndUpdate( req.params.id, {...req.body , cat_img:req.file.path}, { new: true })
 

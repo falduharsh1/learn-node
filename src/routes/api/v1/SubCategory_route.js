@@ -6,8 +6,14 @@ const subcategory = express.Router()
 
 // localhost:4000/api/v1/subcategory/get-subcategory
 subcategory.get(
-    '/get-subcategory',
+    '/get-subcategory/:id',
     subCategory_controller.getSubCategory
+)
+
+// localhost:4000/api/v1/subcategory/list-subcategory
+subcategory.get(
+    '/list-subcategory',
+    subCategory_controller.listSubCategory
 )
 
 // localhost:4000/api/v1/subcategory/post-subcategory
@@ -20,6 +26,7 @@ subcategory.post(
 // localhost:4000/api/v1/subcategory/put-subcategory/:id
 subcategory.put(
     '/put-subcategory/:id',
+    upload.single('subCat_img'),
     subCategory_controller.putSubCategory
 )
 

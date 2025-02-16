@@ -3,10 +3,13 @@ const mongoose = require('mongoose')
 
 const productSchema = new mongoose.Schema(
     { 
-        subCategory_id :  { 
+        subcategory :  { 
             type : mongoose.Types.ObjectId,
             ref : 'SubCategoryes',
-            required : true     
+        },
+        category : {
+            type : mongoose.Types.ObjectId,
+            ref : 'Categories',
         },
         name : { 
             type: String,
@@ -18,6 +21,10 @@ const productSchema = new mongoose.Schema(
             type: String,
             required : true,
             trim : true,
+        },
+        price : {
+            type : Number,
+            required : true,
         },
         product_img : {
             type: String,

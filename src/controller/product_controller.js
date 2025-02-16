@@ -1,10 +1,91 @@
 const Products = require("../models/product_modele");
+const SubCategoryes = require("../models/subCategory_modele");
+const fs = require("fs")
 
-const getProduct= (req,res) => {
+
+const getSubByCat = async (req, res) => {
     try {
-        res.send('Get a Product')
+        console.log("vvv",req.params.id);   
+        
+        const subcat = await SubCategoryes.find({category: req.params.id})
+
+        if (!subcat) {
+            return res.status(400).json({
+                success: false,
+                data: null,
+                message: 'error in get all product'
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: subcat,
+            message: 'getting all product'
+        })
+
     } catch (error) {
-        console.log(error);
+        return res.status(500).json({
+            success: false,
+            data: null,
+            message: 'error in server' + error.message
+        })        
+    }
+}
+
+
+const listproduct = async (req, res) => {
+    try {
+        console.log('okk',);
+        
+        const product = await Products.find() 
+
+        if (!product) {
+            return res.status(400).json({
+                success: false,
+                data: null,
+                message: 'error in get all product'
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: product,
+            message: 'getting all product'
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            data: null,
+            message: 'error in server' + error.message
+        })        
+    }
+}
+
+const getProduct= async(req,res) => {
+    try {
+        const product = await Products.findById(req.params.id)
+
+        if (!product) {
+            return res.status(400).json({
+                success: false,
+                data: [],
+                message: 'error in get product'
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: product,
+            message: 'product get'
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            data: null,
+            message: 'error in server' + error.message
+        })
     }
 
 }
@@ -12,6 +93,7 @@ const getProduct= (req,res) => {
 const addProduct = async (req,res) => {
     try {
 
+        console.log('okAdd',);
         console.log(req.body, req.file);
         
         const Product = await Products.create({...req.body , product_img : req.file.path})
@@ -43,25 +125,87 @@ const addProduct = async (req,res) => {
 
 }
 
-const putProduct= (req,res) => {
+const putProduct = async (req,res) => {
     try {
-        res.send('Put a Product')
+
+        let product
+
+        if(req.file){
+                const productobj = await Products.findById(req.params.id)
+
+            fs.unlinkSync(productobj.product_img , (err) => {
+                if(err){
+                    return res.status(400).json({
+                        success: false,
+                        data: [],
+                        message: 'error in delete product'
+                    })
+                }
+            })
+
+            product = await Products.findByIdAndUpdate(req.params.id, {...req.body , product_img : req.file.path}, { new: true })
+
+        }else{
+            product = await Products.findByIdAndUpdate(req.params.id, req.body, { new: true })
+
+        }
+
+        if (!product) {
+            return res.status(400).json({
+                success: false,
+                data: [],
+                message: 'error in update product'
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: product,
+            message: 'successfully product update '
+        })
+
     } catch (error) {
-        console.log(error);
+        return res.status(500).json({
+            success: false,
+            data: [],
+            message: 'error in server' + error.message
+        })
     }
 
 }
 
-const deleteProduct= (req,res) => {
+const deleteProduct = async (req,res) => {
     try {
-        res.send('Delete a Product')
+        const product = await Products.findByIdAndDelete(req.params.id)
+
+        if (!product) {
+            return res.status(400).json({
+                success: false,
+                data: [],
+                message: 'error in delete product'
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: product,
+            message: 'product delete successfully'
+        })
+
+
     } catch (error) {
-        console.log(error);
+        return res.status(500).json({
+            success: false,
+            data: [],
+            message: 'error in server' + error.message
+        })
     }
 
 }
 
 module.exports = {
+    getSubByCat,
+    listproduct,
     getProduct,
     addProduct,
     putProduct,
