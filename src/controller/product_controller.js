@@ -32,6 +32,70 @@ const getSubByCat = async (req, res) => {
     }
 }
 
+const getAll_product = async (req,res) => {
+    try {
+        const GetProduct = await Products.aggregate(
+            [
+                {
+                    $lookup: {
+                      from: 'subcategoryes',
+                      localField: 'subcategory',
+                      foreignField: '_id',
+                      as: 'SubCat_data'
+                    }
+                  },
+   						{
+								$lookup: {
+								  from: 'categories',
+								  localField: 'category',
+								  foreignField: '_id',
+								  as: 'Cat_data'
+								}
+              },
+                {
+                  $unwind:'$SubCat_data',
+                },
+  						  {
+                  $unwind:'$Cat_data',
+                },
+   
+                {
+                  $project: {
+                    id : 1,
+                    Cat_name : '$Cat_data.name' , 
+                    Sub_cat_name : '$SubCat_data.name',
+                    Product_name : '$name'
+                  }
+                }
+              ]
+        )
+
+        if (!GetProduct) {
+            return res.status(400)
+                .json({
+                    success: false,
+                    data: [],
+                    message: 'Not Get Data'
+                })
+        }
+
+        return res.status(200)
+            .json({
+                success: true,
+                data: GetProduct,
+                message: 'Successfully Data Get'
+            })
+            
+    } catch (error) {
+        return res.status(500)
+            .json({
+                success: false,
+                data: [],
+                message: 'error in server' + error.message
+            })
+    }
+}
+
 
 const listproduct = async (req, res) => {
     try {
@@ -209,5 +273,6 @@ module.exports = {
     getProduct,
     addProduct,
     putProduct,
-    deleteProduct
+    deleteProduct,
+    getAll_product
 }

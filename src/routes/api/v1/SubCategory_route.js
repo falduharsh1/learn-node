@@ -16,6 +16,12 @@ subcategory.get(
     subCategory_controller.listSubCategory
 )
 
+// localhost:8000/api/v1/subcategory/get_data-subcategory
+subcategory.get(
+    '/get_data-subcategory',
+    subCategory_controller.get_data_SubCategory
+)
+
 // localhost:8000/api/v1/subcategory/post-subcategory
 subcategory.post(
     '/post-subcategory',

@@ -16,6 +16,12 @@ category.get(
     Category_controller.listCategory
 )
 
+// localhost:8000/api/v1/category/Count-category
+category.get(
+    '/Count-category',
+    Category_controller.CountCategory
+)
+
 // localhost:8000/api/v1/category/post-category
 category.post(
     '/post-category',
@@ -34,6 +40,42 @@ category.put(
 category.delete(
     '/delete-category/:id',
     Category_controller.deleteCategory
+)
+
+// localhost:8000/api/v1/category/count-active
+category.get(
+    '/count-active',
+    Category_controller.CountActive
+)
+
+// localhost:8000/api/v1/category/most-products
+category.get(
+    '/most-products',
+    Category_controller.mostProducts
+)
+
+// localhost:8000/api/v1/category/average-products
+category.get(
+    '/average-products',
+    Category_controller.averageProducts
+)
+
+// localhost:8000/api/v1/category/inactiveProducts 
+category.get(
+    '/inactiveProducts',
+    Category_controller.inactive
+)
+
+// localhost:8000/api/v1/category/count-subcategories
+category.get(
+    '/count-subcategories',
+    Category_controller.countSubcategories
+)
+
+// localhost:8000/api/v1/category/category-subcategory/:id
+category.get(
+    '/category-subcategory/:id',
+    Category_controller.SubCat_by_CatID
 )
 
 module.exports = category

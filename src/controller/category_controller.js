@@ -1,3 +1,4 @@
+const { error } = require("console");
 const Categories = require("../models/category_modele");
 const fs = require("fs")
 const listCategory = async (req, res) => {
@@ -54,6 +55,42 @@ const getCategory = async (req, res) => {
     }
 }
 
+const CountCategory = async (req, res) => {
+    try {
+        const CountCat = await Categories.aggregate(
+            [
+                {
+                    $count: 'Category No'
+                }
+            ]
+        )
+
+        if (!CountCat) {
+            return res.status(400)
+                .json({
+                    success: false,
+                    data: [],
+                    message: 'Not Count Category data'
+                })
+        }
+
+        return res.status(200)
+            .json({
+                success: true,
+                data: CountCat,
+                message: 'Successfully Count Category Data'
+            })
+
+    } catch (error) {
+        return res.status(500)
+            .json({
+                success: false,
+                data: [],
+                message: 'error in server' + error.message
+            })
+    }
+}
+
 const addCategory = async (req, res) => {
     try {
 
@@ -93,7 +130,7 @@ const putCategory = async (req, res) => {
         if (req.file) {
 
             const categoryObj = await Categories.findById(req.params.id)
-            
+
 
             fs.unlink(categoryObj.cat_img, (err) => {
                 if (err) {
@@ -104,13 +141,13 @@ const putCategory = async (req, res) => {
                     })
                 }
             })
-            
-            
-             category = await Categories.findByIdAndUpdate( req.params.id, {...req.body , cat_img:req.file.path}, { new: true })
+
+
+            category = await Categories.findByIdAndUpdate(req.params.id, { ...req.body, cat_img: req.file.path }, { new: true })
 
         } else {
 
-             category = await Categories.findByIdAndUpdate( req.params.id, req.body, { new: true })
+            category = await Categories.findByIdAndUpdate(req.params.id, req.body, { new: true })
 
         }
 
@@ -178,10 +215,241 @@ const deleteCategory = async (req, res) => {
     }
 }
 
+const CountActive = async (req, res) => {
+    try {
+        const ActiveUser = await Categories.aggregate(
+            [
+                {
+                    $match: {
+                        isActive: 'true'
+                    }
+                },
+                {
+                    $count: 'ActiveUser'
+                }
+            ]
+        )
+
+        if (!ActiveUser) {
+            return res.status(400)
+                .json({
+                    success: false,
+                    data: [],
+                    message: 'error'
+                })
+        }
+
+        return res.status(200)
+            .json({
+                success: true,
+                data: ActiveUser,
+                message: 'Successfully Count active user'
+            })
+    } catch (error) {
+        return res.status(500)
+            .json({
+                success: false,
+                data: [],
+                message: 'error in server' + error.message
+            })
+    }
+}
+
+const mostProducts = async (req, res) => {
+    try {
+        const mostProduct = await Categories.aggregate(
+            [
+                {
+                  $lookup: {
+                    from: 'products',
+                    localField: '_id',
+                    foreignField: 'category',
+                    as: 'productData'
+                  }
+                },
+                {
+                  $addFields: {
+                    products : {$size : '$productData'}
+                  }
+                },
+                {
+                  $project: {
+                    Cat_name : '$name',
+                    products : 1
+                  }
+                },
+                {
+                  $sort: {
+                    products: -1
+                  }
+                },
+                {
+                  $limit: 1
+                }
+              ]
+        )
+
+        if(!mostProduct){
+            return res.status(400)
+                .json({
+                    success : false,
+                    data : [],
+                    message : 'error in getting most product'
+                })
+        }
+
+        return res.status(200)
+            .json({
+                success : true,
+                data : mostProduct,
+                message : ' Successfull getting most product'
+            })
+    } catch (error) {
+        return res.status(500)
+            .json({
+                success : false,
+                data : [],
+                message : 'error in server' + error.message
+            })
+    }
+}
+
+const averageProducts = async (req, res) => {
+    try {
+
+    } catch (error) {
+
+    }
+}
+
+const inactive = async (req, res) => {
+    try {
+        const inActiveUser = await Categories.aggregate(
+            [
+                {
+                  $match: {
+                    isActive : 'false'
+                  }
+                },
+                {
+                  $count: 'InActiveUser'
+                }
+              ]
+        )
+
+        if (!inActiveUser) {
+            return res.status(400)
+                .json({
+                    success: false,
+                    data: [],
+                    message: 'error'
+                })
+        }
+
+        return res.status(200)
+            .json({
+                success: true,
+                data: inActiveUser,
+                message: 'Successfully Count Inactive user'
+            })
+    } catch (error) {
+
+        return res.status(500)
+            .json({
+                success: false,
+                data: [],
+                message: 'error in server' + error.message
+            })
+    }
+}
+
+const countSubcategories = async (req, res) => {
+    try {
+        const CountSubCat = await Categories.aggregate(
+            [
+                {
+                  $lookup: {
+                    from: 'subcategoryes',
+                    localField: '_id',
+                    foreignField: 'category',
+                    as: 'subCat_data'
+                  }
+                },
+                {
+                  $project: {
+                    name : 1,
+                    SubCatCount : {$size : '$subCat_data'}
+                  }
+                }
+              ]
+        )
+
+        if(!CountSubCat){
+            return res.status(400)
+                .json({
+                    success : false,
+                    data : [],
+                    message : 'error in count subcategory'
+                })
+        }
+
+        return res.status(200)
+            .json({
+                success : true,
+                data : CountSubCat,
+                message : 'Count subcategory successFull'
+            })
+
+    } catch (error) {
+        return res.status(500)
+            .json({
+                success : false,
+                data : [],
+                message : 'error in server' + error.message
+            })
+    }
+}
+
+const SubCat_by_CatID = async (req,res) => {
+    try {
+        // if(){
+        //     [
+        //         {
+        //           $lookup: {
+        //             from: 'subcategoryes',
+        //             localField: '_id',
+        //             foreignField: 'category',
+        //             as: 'subcatData'
+        //           }
+        //         },
+        //         {
+        //           $match: {
+        //             data : {'$_id' : '$subcatData.category' }
+        //           }
+        //         }
+        //       ]
+        // }
+    } catch (error) {
+        return res.status(500)
+            .json({
+                success : false,
+                data : [],
+                message : 'error in server' + error.message
+            })
+    }
+}
+
 module.exports = {
     listCategory,
     getCategory,
     addCategory,
     putCategory,
-    deleteCategory
+    deleteCategory,
+    CountCategory,
+    CountActive,
+    mostProducts,
+    averageProducts,
+    inactive,
+    countSubcategories,
+    SubCat_by_CatID
 }

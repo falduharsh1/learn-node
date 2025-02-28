@@ -27,6 +27,57 @@
             })        
         }
     }
+
+    const get_data_SubCategory = async (req,res) => {
+        try {
+            const GetSub = await SubCategoryes.aggregate(
+                [
+                    {
+                      $lookup: {
+                        from: 'categories',
+                        localField: 'category',
+                        foreignField: '_id',
+                        as: 'CatData'
+                      }
+                    },
+                    {
+                      $unwind: '$CatData'
+                    },
+                    {
+                      $project: {
+                       id : 1,
+                       Cat_name : '$CatData.name',
+                       SubCat_name : '$name'
+                      }
+                    }
+                  ]
+            )
+    
+            if (!GetSub) {
+                return res.status(400)
+                    .json({
+                        success: false,
+                        data: [],
+                        message: 'Not Get Data'
+                    })
+            }
+    
+            return res.status(200)
+                .json({
+                    success: true,
+                    data: GetSub,
+                    message: 'Successfully Data Get'
+                })
+                
+        } catch (error) {
+            return res.status(500)
+                .json({
+                    success: false,
+                    data: [],
+                    message: 'error in server' + error.message
+                })
+        }
+    }
     
     const getSubCategory = async (req, res) => {
         try {
@@ -175,5 +226,6 @@
         listSubCategory,
         addSubCategory,
         putSubCategory,
-        deleteSubCategory
+        deleteSubCategory,
+        get_data_SubCategory
     }
