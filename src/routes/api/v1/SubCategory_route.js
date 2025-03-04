@@ -42,4 +42,34 @@ subcategory.delete(
     subCategory_controller.deleteSubCategory
 )
 
+// localhost:8000/api/v1/subcategory/activeSubCategory
+// subcategory.get(
+//     '/activeSubCategory',
+//     subCategory_controller.activeSubCategory
+// )
+
+// localhost:8000/api/v1/subcategory/activeSubCategory
+subcategory.get(
+    '/activeSubCategory',
+    subCategory_controller.activeSubCategory
+)
+
+// localhost:8000/api/v1/subcategory/mostSubCategory
+subcategory.get(
+    '/mostSubCategory',
+    subCategory_controller.mostSubCategory
+)
+
+// localhost:8000/api/v1/subcategory/InactiveSubCategory
+subcategory.get(
+    '/InactiveSubCategory',
+    subCategory_controller.InactiveSubCategory
+)
+
+// localhost:8000/api/v1/subcategory/countProducts
+subcategory.get(
+    '/countProducts',
+    subCategory_controller.countProducts
+)
+
 module.exports = subcategory

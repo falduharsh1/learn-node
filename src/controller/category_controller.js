@@ -1,6 +1,7 @@
 const { error } = require("console");
 const Categories = require("../models/category_modele");
-const fs = require("fs")
+const fs = require("fs");
+const { default: mongoose } = require("mongoose");
 const listCategory = async (req, res) => {
     try {
         const category = await Categories.find()
@@ -412,23 +413,50 @@ const countSubcategories = async (req, res) => {
 
 const SubCat_by_CatID = async (req,res) => {
     try {
-        // if(){
-        //     [
-        //         {
-        //           $lookup: {
-        //             from: 'subcategoryes',
-        //             localField: '_id',
-        //             foreignField: 'category',
-        //             as: 'subcatData'
-        //           }
-        //         },
-        //         {
-        //           $match: {
-        //             data : {'$_id' : '$subcatData.category' }
-        //           }
-        //         }
-        //       ]
-        // }
+        console.log(req.params.id);
+
+        // let ids = req.params.id
+        
+        const subcat_catId = await Categories.aggregate(
+              [
+                {
+                  $lookup: {
+                    from: "subcategoryes",
+                    localField: "_id",
+                    foreignField: "category",
+                    as: "subcatData"
+                  }
+                },
+                {
+                  $match: {
+                    _id: new mongoose.Types.ObjectId(req.params.id)
+                  }
+                },
+                {
+                  $project: {
+                    cat_name: "$name",
+                    subCat_name: "$subcatData.name"
+                  }
+                }
+              ]
+        )
+
+        if(!subcat_catId){
+            return res.status(400)
+                .json({
+                    success : false,
+                    data : [],
+                    message : 'error in getting subcategory'
+                })
+        }
+
+        return res.status(200)
+            .json({
+                success : true,
+                data : subcat_catId,
+                message : 'successFull'
+            })
+        
     } catch (error) {
         return res.status(500)
             .json({
@@ -453,3 +481,25 @@ module.exports = {
     countSubcategories,
     SubCat_by_CatID
 }
+
+// [
+//     {
+//       $lookup: {
+//         from: 'subcategoryes',
+//         localField: '_id',
+//         foreignField: 'category',
+//         as: 'subcatData'
+//       }
+//     },
+//     {
+//       $match: {
+//            _id : ObjectId('67a57c177b77d70a4508634d')
+//       }
+//     },
+//           {
+//             $project: {
+//               cat_name : '$name',
+//               subCat_name : '$subcatData.name'
+//             }
+//           }
+//   ]
