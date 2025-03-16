@@ -9,6 +9,12 @@ router.get(
     Product_controller.getProduct
 )
 
+//http://localhost:8000/api/v1/product/searchProduct
+router.get(
+    '/searchProduct',
+    Product_controller.searchProduct
+)
+
 //http://localhost:8000/api/v1/product/list-product
 router.get(
     '/list-product',
@@ -48,3 +54,4 @@ router.delete(
 
 
 module.exports = router
+

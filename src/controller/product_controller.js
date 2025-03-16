@@ -32,6 +32,100 @@ const getSubByCat = async (req, res) => {
     }
 }
 
+const searchProduct = async (req, res) => {
+    try {
+        console.log(req.query);
+
+        const myobj = {}
+
+        const {page , limit} = req.query
+
+        const { category , rating , min , max } = req.query
+
+        if(category){
+            myobj["category_id"] = parseInt(category)
+        }
+
+        if(rating){
+            // myobj["AvgRating"] = { $avg : parseFloat(rating)}
+        }
+
+        if(min || max){
+            myobj["Variant.attributes.Price"] = {}
+        }
+
+        if(min){
+            myobj["Variant.attributes.Price"].$gte =  parseInt(min) 
+        }
+
+        if(max){
+            myobj["Variant.attributes.Price"].$lte =  parseInt(max) 
+        }
+
+        console.log("myobj",myobj);
+
+        let pipline = [
+            {
+              $lookup: {
+                from: "variant",
+                localField: "_id",
+                foreignField: "product_id",
+                as: "Variant"
+              }
+            },
+            {
+              $unwind: "$Variant"
+            },
+            {
+              $lookup: {
+                from: "review",
+                localField: "_id",
+                foreignField: "product_id",
+                as: "Review"
+              }
+            },
+            {
+              $addFields: {
+                AvgRating: { $avg: "$Review.rating" }
+              }
+            },
+            {
+              $match: myobj
+            },
+            {
+              $group: {
+                _id: "$_id",
+                category_id: { $first: "$category_id" },
+                subcategory_id: {
+                  $first: "$subcategory_id"
+                },
+                name : {$first : "$name"},
+                variant: { $push: "$Variant.attributes" },
+                rating: { $first: "$AvgRating" }
+              }
+            },
+            {
+                $sort : {name : 1},
+              }
+        ]
+
+        let product;
+
+        if(page && limit){
+            product = await Products.find().skip((page-1)*limit).limit(limit) 
+       }else{
+           product = await Products.find()
+       }
+
+        const searchProduct = await Products.aggregate(pipline)
+
+        console.log(searchProduct);
+        
+    } catch (error) {
+        
+    }
+}
+
 const getAll_product = async (req,res) => {
     try {
         const GetProduct = await Products.aggregate(
@@ -100,8 +194,17 @@ const getAll_product = async (req,res) => {
 const listproduct = async (req, res) => {
     try {
         console.log('okk',);
-        
-        const product = await Products.find() 
+
+        const {page , limit} = req.query
+
+        let product;
+
+        if(page && limit){
+             product = await Products.find().skip((page-1)*limit).limit(limit) 
+        }else{
+            product = await Products.find()
+        }
+         
 
         if (!product) {
             return res.status(400).json({
@@ -274,5 +377,6 @@ module.exports = {
     addProduct,
     putProduct,
     deleteProduct,
-    getAll_product
+    getAll_product,
+    searchProduct
 }
