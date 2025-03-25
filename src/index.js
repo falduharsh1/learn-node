@@ -1,3 +1,4 @@
+const mysqlpool = require('../config/db');
 const connectDB = require('./Db/mongoDB');
 const router = require('./routes/api/v1');
 const  cors = require('cors')
@@ -9,6 +10,7 @@ const app = express();
 
 app.use(express.json())
 app.use(cors(corsOptions))
+
 connectDB()
 
 var corsOptions = {
