@@ -1,4 +1,4 @@
-const mysqlpool = require('../config/db');
+const mysqlpool = require('./Db/mysqlDB');
 const connectDB = require('./Db/mongoDB');
 const router = require('./routes/api/v1');
 const  cors = require('cors')
