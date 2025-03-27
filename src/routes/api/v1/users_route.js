@@ -9,4 +9,16 @@ user.post(
     user_controller.user_register
 )
 
+// localhost:8000/api/v1/user/user-login
+user.post(
+    '/user-login',
+    user_controller.user_login
+)
+
+// localhost:8000/api/v1/user/user-new-token
+user.post(
+    '/user-new-token',
+    user_controller.user_new_token
+)
+
 module.exports = user

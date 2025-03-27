@@ -2,6 +2,8 @@ const mysqlpool = require('./Db/mysqlDB');
 const connectDB = require('./Db/mongoDB');
 const router = require('./routes/api/v1');
 const  cors = require('cors')
+const cookieParser = require('cookie-parser')
+
 
 require('dotenv').config()
 
@@ -10,6 +12,7 @@ const app = express();
 
 app.use(express.json())
 app.use(cors(corsOptions))
+app.use(cookieParser())
 
 connectDB()
 
