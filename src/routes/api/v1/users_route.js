@@ -15,10 +15,16 @@ user.post(
     user_controller.user_login
 )
 
-// localhost:8000/api/v1/user/user-new-token
+// localhost:8000/api/v1/user/generate-new-token
+user.get(
+    '/generate-new-token',
+    user_controller.generate_new_token
+)
+
+// localhost:8000/api/v1/user/logout-user
 user.post(
-    '/user-new-token',
-    user_controller.user_new_token
+    '/logout-user',
+    user_controller.logout_user
 )
 
 module.exports = user

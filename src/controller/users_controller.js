@@ -10,34 +10,32 @@ var jwt = require('jsonwebtoken');
 
 const generate_token = async (userId) => {
     try {
-        
-    const user = await Users.findById(userId)
+        const user = await Users.findById(userId)
 
-    const accessToken = jwt.sign({
-        id: user._id,
-        role: user.role,
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-    }, process.env.ACCESS_TOKEN, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY });
+        const accessToken = jwt.sign({
+            _id: user._id,
+            role: user.role,
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        }, process.env.ACCESS_TOKEN, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY });
 
-    const refreshToken = jwt.sign({
-        id: user._id,
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-    }, process.env.REFRESH_TOKEN, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY });
+        const refreshToken = jwt.sign({
+            _id: user._id,
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }, process.env.REFRESH_TOKEN, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY });
 
-    console.log("genfunc",  refreshToken);
+        console.log("genfunc", refreshToken);
 
-    user.refreshToken = refreshToken
+        user.refreshToken = refreshToken
 
-    await user.save({ validateBeforeSave: false })
+        await user.save({ validateBeforeSave: false })
 
-    return { accessToken, refreshToken }
+        return { accessToken, refreshToken }
 
     } catch (error) {
         console.log(error);
-        
+
     }
 }
-
 
 const user_register = async (req, res) => {
     try {
@@ -122,9 +120,9 @@ const user_login = async (req, res) => {
 
         const userData = await Users.findById(user._id).select('-password -refreshToken')
 
-        const { accessToken, refreshToken } =  await generate_token(user._id);
+        const { accessToken, refreshToken } = await generate_token(user._id);
 
-        console.log("login",accessToken, refreshToken);
+        console.log("login", accessToken, refreshToken);
 
         const options = {
             httpOnly: true,
@@ -150,44 +148,139 @@ const user_login = async (req, res) => {
     }
 }
 
-const user_new_token = async (req, res) => {
-    // try {
-    //     const {accessToken,refreshToken,email} = req.body
+const generate_new_token = async (req, res) => {
+    try {
 
-    //     const user = await Users.findOne({ email: email })
+        // console.log(req.cookies , req.headers.authorization.replace("Bearer "," "));
 
-    //     if (!user) {
-    //         return res.status(400)
-    //             .json({
-    //                 success: false,
-    //                 data: [],
-    //                 message: 'user is not found'
-    //             })
-    //     }
+        const token = req.cookies.refreshToken || req.headers.authorization.replace("Bearer ", " ")
 
-    //     const token_verify = await bcrypt.compare(accessToken , user.accessToken) 
+        console.log("token", token);
 
-    //     if (!token_verify) {
-    //         return res.status(400)
-    //             .json({
-    //                 success: false,
-    //                 data: [],
-    //                 message: ' Invalid token'
-    //             })
-    //     }
-    // } catch (error) {
-    //     return res.status(500)
-    //     .json({
-    //         success: false,
-    //         data: [],
-    //         message: 'error in server' + error.message
-    //     })
-    // }
+        if (!token) {
+            return res.status(400)
+                .json({
+                    success: false,
+                    message: 'Token Not Found'
+                })
+        }
 
+        try {
+            const verifyToken = jwt.verify(token, process.env.REFRESH_TOKEN)
+
+            if (!verifyToken) {
+                return res.status(400)
+                    .json({
+                        success: false,
+                        data: [],
+                        message: 'Not found'
+                    })
+            }
+
+            console.log("_id :", verifyToken._id);
+
+            const user = await Users.findById(verifyToken._id)
+
+            console.log("user", user);
+
+            if(user.refreshToken !== token ){
+                return res.status(404)
+                .json({
+                    success: false,
+                    data: [],
+                    message: 'Token not match'
+                })
+            }
+
+            if (!user) {
+                return res.status(404)
+                    .json({
+                        success: false,
+                        data: [],
+                        message: 'user not found'
+                    })
+            }
+
+            const userData = await Users.findById(user._id).select('-password -refreshToken')
+
+            const { accessToken, refreshToken } = await generate_token(user._id);
+
+            console.log("login", accessToken, refreshToken);
+
+            const options = {
+                httpOnly: true,
+                secure: true
+            }
+
+            return res.status(200)
+                .cookie("accessToken", accessToken, options)
+                .cookie("refreshToken", refreshToken, options)
+                .json({
+                    success: true,
+                    data: userData,
+                    message: 'SuccessFully generate new token'
+                })
+        } catch (error) {
+            return res.status(500)
+                .json({
+                    success: false,
+                    data: [],
+                    message: 'error in server' + error.message
+                })
+        }
+
+    } catch (error) {
+        return res.status(500)
+            .json({
+                success: false,
+                data: [],
+                message: 'error in server' + error.message
+            })
+    }
+}
+
+const logout_user = async (req,res) => {
+    try {
+        console.log(req.body._id);
+
+        const user = await Users.findByIdAndUpdate(
+            req.body._id,
+            {
+                $unset : {
+                    refreshToken : 1
+                }
+            },
+            {
+                new : true
+            }
+        )
+
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+
+        return res.status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json({
+            success: true,
+            message: 'SuccessFully clear'
+        })
+        
+    } catch (error) {
+        return res.status(500)
+        .json({
+            success: false,
+            data: [],
+            message: 'error in server' + error.message
+        })
+    }
 }
 
 module.exports = {
     user_register,
     user_login,
-    user_new_token
+    generate_new_token,
+    logout_user
 }
