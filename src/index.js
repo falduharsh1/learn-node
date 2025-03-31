@@ -1,6 +1,7 @@
 const connectDB = require('./Db/mongoDB');
 const router = require('./routes/api/v1');
 const  cors = require('cors')
+const cookieParser = require('cookie-parser')
 
 require('dotenv').config()
 
@@ -9,11 +10,13 @@ const app = express();
 
 app.use(express.json())
 app.use(cors(corsOptions))
+app.use(cookieParser())
 connectDB()
 
 var corsOptions = {
   origin: 'http://localhost:3000',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200 ,
+  credentials : true
 }
 
 app.use('/public', express.static('public'))
