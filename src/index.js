@@ -11,7 +11,7 @@ const express = require('express')
 const app = express();
 
 app.use(express.json())
-app.use(cors(corsOptions))
+
 app.use(cookieParser())
 
 connectDB()
@@ -21,6 +21,8 @@ var corsOptions = {
   optionsSuccessStatus: 200 ,
   credentials : true
 }
+
+app.use(cors(corsOptions))
 
 app.use('/public', express.static('public'))
 
