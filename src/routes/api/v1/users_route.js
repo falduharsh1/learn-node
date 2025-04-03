@@ -27,4 +27,9 @@ user.post(
     user_controller.logout_user
 )
 
+//  
+user.get(
+    '/check-auth',
+    user_controller.check_auth
+)
 module.exports = user
