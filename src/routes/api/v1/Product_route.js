@@ -1,6 +1,7 @@
 const express = require('express');
 const { Product_controller } = require('../../../controller');
 const upload = require('../../../middleware/upload');
+const auth = require('../../../middleware/auth');
 const router = express.Router();
 
 //localhost:8000/api/v1/product/get-product
@@ -36,6 +37,7 @@ router.post(
 //localhost:8000/api/v1/product/put-product/:id
 router.put(
     '/put-product/:id',
+    auth(["admin","employee"]),
     upload.single('product_img'),
     Product_controller.putProduct
 )
@@ -43,6 +45,7 @@ router.put(
 //localhost:8000/api/v1/product/delete-product/:id
 router.delete(
     '/delete-product/:id',
+    auth(["admin","employee"]),
     Product_controller.deleteProduct
 )
 

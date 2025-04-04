@@ -1,6 +1,7 @@
 const express = require('express')
 const { subCategory_controller } = require('../../../controller')
 const upload = require('../../../middleware/upload')
+const auth = require('../../../middleware/auth')
 
 const subcategory = express.Router()
 
@@ -32,6 +33,7 @@ subcategory.post(
 // localhost:8000/api/v1/subcategory/put-subcategory/:id
 subcategory.put(
     '/put-subcategory/:id',
+    auth(["admin","employee"]),
     upload.single('subCat_img'),
     subCategory_controller.putSubCategory
 )
@@ -39,6 +41,7 @@ subcategory.put(
 // localhost:8000/api/v1/subcategory/delete-subcategory/:id
 subcategory.delete(
     '/delete-subcategory/:id',
+    auth(["admin","employee"]),
     subCategory_controller.deleteSubCategory
 )
 

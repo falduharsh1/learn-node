@@ -1,5 +1,6 @@
 const express = require('express')
 const { Coupon_controller } = require('../../../controller');
+const auth = require('../../../middleware/auth');
 
 const coupon = express.Router()
 
@@ -24,12 +25,14 @@ coupon.post(
 // localhost:8000/api/v1/coupon/put-coupon/:id
 coupon.put(
     '/put-coupon/:id',
+    auth(["admin","employee"]),
     Coupon_controller.putCoupon
 )
 
 // localhost:8000/api/v1/coupon/delete-coupon/:id
 coupon.delete(
     '/delete-coupon/:id',
+    auth(["admin","employee"]),
     Coupon_controller.deleteCoupon
 )
 
