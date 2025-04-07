@@ -7,19 +7,22 @@ const generate_token = async (userId) => {
 
     const user = await ExamUsers.findById(userId)
 
-    const access_token = jwt.sign({
+    const accessToken = jwt.sign({
         _id : user._id,
+        role : user.role,
         expiresIn: process.env.ACCESS_TOKEN_EXPIRY
       }, process.env.ACCESS_TOKEN, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY });
 
-      const refresh_token = jwt.sign({
+      const refreshToken = jwt.sign({
         _id : user._id,
         expiresIn: process.env.REFRESH_TOKEN_EXPIRY
       }, process.env.REFRESH_TOKEN, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY });
       
-      user.refresh_token = refresh_token 
+      user.refreshToken = refreshToken 
 
-      return {access_token,refresh_token}
+      await user.save({ validateBeforeSave: false })
+
+      return {accessToken,refreshToken}
     
 }
 
@@ -98,24 +101,24 @@ const user_login = async (req, res) => {
                 })
         }
 
-        const {access_token , refresh_token } = await generate_token(user._id)
+        const {accessToken , refreshToken } = await generate_token(user._id)
 
-        const UserData =  await ExamUsers.findById(user._id).select('-password -refresh_token')
+        const UserData =  await ExamUsers.findById(user._id).select('-password -refreshToken')
 
-        console.log("refresh_token",refresh_token);
+        console.log("refreshToken",refreshToken);
 
         const option = {
             httpOnly : true,
             secure : true
         }
 
-        console.log("access_token",access_token);
-        console.log("refresh_token",refresh_token);
+        console.log("access_token",accessToken);
+        console.log("refresh_token",refreshToken);
         
 
         return res.status(200)
-        .cookie("access_token",access_token,option)
-        .cookie("refresh_token",refresh_token,option)
+        .cookie("accessToken",accessToken,option)
+        .cookie("refreshToken",refreshToken,option)
         .json({
             success : true,
             data : UserData,
@@ -135,22 +138,81 @@ const user_login = async (req, res) => {
 const user_new_token =  async (req,res) => {
     try {
 
-        // console.log(req.headers.authorization.replace("Bearer "," "));
+        const token = req.cookies.refreshToken || req.headers.authorization.replace("Bearer ", " ")
         
-        const token =  req.headers.authorization.replace("Bearer "," ")
-
-        console.log("token",token);
-
-        if(!token){
-            return res.status(400)
-            .json({
-                success: false,
-                message: 'not found'
-            })
-        }
-
+                console.log("token", token);
         
+                if (!token) {
+                    return res.status(400)
+                        .json({
+                            success: false,
+                            message: 'Token Not Found'
+                        })
+                }
         
+                try {
+                    const verifyToken = jwt.verify(token, process.env.REFRESH_TOKEN)
+        
+                    if (!verifyToken) {
+                        return res.status(400)
+                            .json({
+                                success: false,
+                                data: [],
+                                message: 'Not found'
+                            })
+                    }
+        
+                    console.log("_id :", verifyToken._id);
+        
+                    const user = await ExamUsers.findById(verifyToken._id)
+        
+                    console.log("user", user);
+        
+                    if(user.refreshToken !== token ){
+                        return res.status(404)
+                        .json({
+                            success: false,
+                            data: [],
+                            message: 'Token not match'
+                        })
+                    }
+        
+                    if (!user) {
+                        return res.status(404)
+                            .json({
+                                success: false,
+                                data: [],
+                                message: 'user not found'
+                            })
+                    }
+        
+                    const userData = await ExamUsers.findById(user._id).select('-password -refreshToken')
+        
+                    const { accessToken, refreshToken } = await generate_token(user._id);
+        
+                    console.log("login", accessToken, refreshToken);
+        
+                    const options = {
+                        httpOnly: true,
+                        secure: true
+                    }
+        
+                    return res.status(200)
+                        .cookie("accessToken", accessToken, options)
+                        .cookie("refreshToken", refreshToken, options)
+                        .json({
+                            success: true,
+                            data: userData,
+                            message: 'SuccessFully generate new token'
+                        })
+                } catch (error) {
+                    return res.status(500)
+                        .json({
+                            success: false,
+                            data: [],
+                            message: 'error in server' + error.message
+                        })
+                }
     } catch (error) {
         return res.status(500)
         .json({
@@ -161,8 +223,92 @@ const user_new_token =  async (req,res) => {
     }
 }
 
+const user_logout_user = async (req,res) => {
+     try {
+            console.log(req.body._id);
+    
+            const user = await ExamUsers.findByIdAndUpdate(
+                req.body._id,
+                {
+                    $unset : {
+                        refreshToken : 1
+                    }
+                },
+                {
+                    new : true
+                }
+            )
+    
+            const options = {
+                httpOnly: true,
+                secure: true
+            }
+    
+            return res.status(200)
+            .clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options)
+            .json({
+                success: true,
+                message: 'SuccessFully clear'
+            })
+            
+        } catch (error) {
+            return res.status(500)
+            .json({
+                success: false,
+                data: [],
+                message: 'error in server' + error.message
+            })
+        }
+}
+
+const user_check_auth = async (req,res) => {
+    try {
+        const token = req.cookies.refreshToken || req.headers.authorization.replace("Bearer ", " ")
+        
+        console.log("token", token);
+
+        if (!token) {
+            return res.status(400)
+                .json({
+                    success: false,
+                    message: 'Token Not Found'
+                })
+        }
+
+        const verifyToken = await jwt.verify(token, process.env.ACCESS_TOKEN)
+        
+        if (!verifyToken) {
+            return res.status(400)
+                .json({
+                    success: false,
+                    data: [],
+                    message: 'Not found'
+                })
+        }
+
+        const userData = await ExamUsers.findById(verifyToken._id).select('-password -refreshToken')
+        
+                return res.status(200)
+                        .json({
+                            success: true,
+                            data: userData,
+                            message: 'SuccessFully authenticated'
+                        })
+    } catch (error) {
+        return res.status(500)
+        .json({
+            success: false,
+            data: [],
+            message: 'error in server' + error.message
+        })
+    }
+}
+
 module.exports = {
     user_register,
     user_login,
-    user_new_token
+    user_new_token,
+    user_logout_user,
+    user_check_auth
 }

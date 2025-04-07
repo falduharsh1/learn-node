@@ -1,6 +1,7 @@
 const express = require('express')
 const { Category_controller } = require('../../../controller/index.js')
 const upload = require('../../../middleware/upload.js')
+const auth = require('../../../middleware/auth.js')
 
 const category = express.Router()
 
@@ -13,6 +14,7 @@ category.get(
 // localhost:8000/api/v1/category/list-category
 category.get(
     '/list-category',
+    auth(["admin","user","employee"]),
     Category_controller.listCategory
 )
 

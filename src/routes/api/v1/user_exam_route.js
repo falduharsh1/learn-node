@@ -21,4 +21,17 @@ user.get(
     User_exam_controller.user_new_token
 )
 
+// localhost:8000/api/v1/user_exam/user-logout-user
+user.post(
+    '/user-logout-user',
+    User_exam_controller.user_logout_user
+)
+
+// localhost:8000/api/v1/user_exam/user-check-auth
+user.get(
+    '/user-check-auth',
+    User_exam_controller.user_check_auth
+
+)
+
 module.exports = user
