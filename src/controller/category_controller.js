@@ -2,6 +2,7 @@ const { error } = require("console");
 const Categories = require("../models/category_modele");
 const fs = require("fs");
 const { default: mongoose } = require("mongoose");
+
 const listCategory = async (req, res) => {
     try {
         const category = await Categories.find()
@@ -104,7 +105,7 @@ const addCategory = async (req, res) => {
                 .json({
                     success: false,
                     data: [],
-                    message: 'unsuccessfull'
+                    message: 'unsuccessfull add category'
                 })
         }
 
@@ -112,7 +113,7 @@ const addCategory = async (req, res) => {
             .json({
                 success: true,
                 data: category,
-                message: 'Data Pass'
+                message: 'Category add'
             })
 
     } catch (error) {

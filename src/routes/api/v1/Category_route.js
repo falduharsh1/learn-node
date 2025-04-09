@@ -34,7 +34,7 @@ category.post(
 // localhost:8000/api/v1/category/put-category/:id
 category.put(
     '/put-category/:id',
-    auth(["admin","employee"]),
+    auth(["admin","employee","user"]),
     upload.single('cat_img'),
     Category_controller.putCategory
 )

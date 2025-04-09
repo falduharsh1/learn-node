@@ -67,7 +67,7 @@ const user_register = async (req, res) => {
                 .json({
                     success: true,
                     data: userData,
-                    message: 'successFull data add'
+                    message: 'successFully register'
                 })
 
         } catch (error) {
@@ -265,7 +265,7 @@ const logout_user = async (req,res) => {
         .clearCookie("refreshToken", options)
         .json({
             success: true,
-            message: 'SuccessFully clear'
+            message: 'SuccessFully Logout'
         })
         
     } catch (error) {
@@ -280,12 +280,12 @@ const logout_user = async (req,res) => {
 
 const check_auth = async (req,res) => {
     try {
-        const token = req.cookies.accessToken || req.headers.authorization.replace("Bearer ", " ")
+        const token = req.cookies.accessToken || req.headers.authorization?.replace("Bearer ", " ")
 
         console.log("token", token);
 
         if (!token) {
-            return res.status(400)
+            return res.status(401)
                 .json({
                     success: false,
                     message: 'Token Not Found'

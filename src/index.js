@@ -7,7 +7,9 @@ const cookieParser = require('cookie-parser')
 
 require('dotenv').config()
 
-const express = require('express')
+const express = require('express');
+const passport = require('passport');
+const Googlestrategy = require('./utils/provider');
 const app = express();
 
 app.use(express.json())
@@ -25,7 +27,11 @@ var corsOptions = {
 app.use(cors(corsOptions))
 
 app.use('/public', express.static('public'))
+app.use(require('express-session')({ secret: process.env.EXPRESS_SESSION_SECRET, resave: true, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
 
+Googlestrategy()
 
 app.use('/api/v1', router)
 
