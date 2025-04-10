@@ -7,6 +7,7 @@
 const bcrypt = require('bcrypt');
 const Users = require("../models/users_modele")
 var jwt = require('jsonwebtoken');
+const sendMail = require('../utils/nodemailer');
 
 const generate_token = async (userId) => {
     try {
@@ -62,6 +63,8 @@ const user_register = async (req, res) => {
             const User = await Users.create({ ...req.body, password: hashPassword })
 
             const userData = await Users.findById(User._id).select('-password ')
+
+            sendMail()
 
             return res.status(201)
                 .json({
@@ -327,5 +330,6 @@ module.exports = {
     user_login,
     generate_new_token,
     logout_user,
-    check_auth
+    check_auth,
+    generate_token
 }

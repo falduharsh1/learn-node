@@ -33,6 +33,20 @@ const Googlestrategy = () => {
         // });
       }
     ));
+
+    passport.serializeUser(function(user, done) {
+      done(null, user._id);
+    });
+    
+    passport.deserializeUser(async function(_id, done) {
+      try {
+        const user = await Users.findById(_id)
+        done(null, user);
+      } catch (error) {
+        console.log(error);
+        done(error, null);
+      }
+    });
 }
 
 module.exports = Googlestrategy
