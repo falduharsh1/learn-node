@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
     googleId : {
         type: String
     },
+    isVerify : {
+        type : Boolean,
+        default : false
+    },
     refreshToken : {
         type: String,
     }

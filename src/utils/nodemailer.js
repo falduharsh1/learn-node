@@ -1,8 +1,8 @@
-//nodemailer is used for send mail and in auth pass generate using 
+//nodemailer is used for send mail and in auth pass generate in stackoverflow website 
 
 const nodemailer = require('nodemailer');
 
-const sendMail = async () => {
+const sendMail = async (email,subject,message) => {
     const transporter = await nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -13,9 +13,9 @@ const sendMail = async () => {
       
       const mailOptions = {
         from: 'falduharsh1@gmail.com',
-        to: 'tirth.patel6521@gmail.com',
-        subject: 'visit dubai',
-        text: 'for toilet cleaning'
+        to: email,
+        subject: subject,
+        text: message
       };
       
       transporter.sendMail(mailOptions, function(error, info){

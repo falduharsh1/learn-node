@@ -66,4 +66,10 @@ user.get('/callback',
         
     });
 
+// localhost:8000/api/v1/user/check-verification
+user.post(
+    '/check-verification',
+    user_controller.check_verification
+)
+
 module.exports = user

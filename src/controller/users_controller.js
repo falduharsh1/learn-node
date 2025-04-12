@@ -8,6 +8,8 @@ const bcrypt = require('bcrypt');
 const Users = require("../models/users_modele")
 var jwt = require('jsonwebtoken');
 const sendMail = require('../utils/nodemailer');
+const { sendOTP } = require('../utils/twilio');
+const { verificationOTP } = require('../utils/twilio');
 
 const generate_token = async (userId) => {
     try {
@@ -64,13 +66,17 @@ const user_register = async (req, res) => {
 
             const userData = await Users.findById(User._id).select('-password ')
 
-            sendMail()
+            const otp = Math.floor(1000 + Math.random() * 9000);
+
+            // sendMail(email,"Verify your fruitable acount",`Your OTP is : ${otp}`)
+
+            sendOTP();
 
             return res.status(201)
                 .json({
                     success: true,
                     data: userData,
-                    message: 'successFully register'
+                    message: 'successFully register , please verify otp'
                 })
 
         } catch (error) {
@@ -108,6 +114,14 @@ const user_login = async (req, res) => {
                     data: [],
                     message: 'user is not found'
                 })
+        }
+
+        if(user.isVerify === false){
+            return res.status(400)
+            .json({
+                success: false,
+                message: 'Please verify otp first'
+            })
         }
 
         const match_password = await bcrypt.compare(password, user.password)
@@ -186,13 +200,13 @@ const generate_new_token = async (req, res) => {
 
             console.log("user", user);
 
-            if(user.refreshToken !== token ){
+            if (user.refreshToken !== token) {
                 return res.status(404)
-                .json({
-                    success: false,
-                    data: [],
-                    message: 'Token not match'
-                })
+                    .json({
+                        success: false,
+                        data: [],
+                        message: 'Token not match'
+                    })
             }
 
             if (!user) {
@@ -242,19 +256,19 @@ const generate_new_token = async (req, res) => {
     }
 }
 
-const logout_user = async (req,res) => {
+const logout_user = async (req, res) => {
     try {
         console.log(req.body._id);
 
         const user = await Users.findByIdAndUpdate(
             req.body._id,
             {
-                $unset : {
-                    refreshToken : 1
+                $unset: {
+                    refreshToken: 1
                 }
             },
             {
-                new : true
+                new: true
             }
         )
 
@@ -264,24 +278,24 @@ const logout_user = async (req,res) => {
         }
 
         return res.status(200)
-        .clearCookie("accessToken", options)
-        .clearCookie("refreshToken", options)
-        .json({
-            success: true,
-            message: 'SuccessFully Logout'
-        })
-        
+            .clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options)
+            .json({
+                success: true,
+                message: 'SuccessFully Logout'
+            })
+
     } catch (error) {
         return res.status(500)
-        .json({
-            success: false,
-            data: [],
-            message: 'error in server' + error.message
-        })
+            .json({
+                success: false,
+                data: [],
+                message: 'error in server' + error.message
+            })
     }
 }
 
-const check_auth = async (req,res) => {
+const check_auth = async (req, res) => {
     try {
         const token = req.cookies.accessToken || req.headers.authorization?.replace("Bearer ", " ")
 
@@ -297,33 +311,71 @@ const check_auth = async (req,res) => {
 
         const verifyToken = jwt.verify(token, process.env.ACCESS_TOKEN)
 
-            if (!verifyToken) {
-                return res.status(400)
-                    .json({
-                        success: false,
-                        data: [],
-                        message: 'Not verify'
-                    })
-            }
+        if (!verifyToken) {
+            return res.status(400)
+                .json({
+                    success: false,
+                    data: [],
+                    message: 'Not verify'
+                })
+        }
 
         const userData = await Users.findById(verifyToken._id).select('-password -refreshToken')
 
         return res.status(200)
-                .json({
-                    success: true,
-                    data: userData,
-                    message: 'SuccessFully authenticated'
-                })
+            .json({
+                success: true,
+                data: userData,
+                message: 'SuccessFully authenticated'
+            })
 
     } catch (error) {
         return res.status(500)
-        .json({
-            success: false,
-            data: [],
-            message: 'error in server' + error.message
-        })
+            .json({
+                success: false,
+                data: [],
+                message: 'error in server' + error.message
+            })
     }
-}   
+}
+
+const check_verification = async (req,res) => {
+
+    try {
+        const { otp, email } = req.body
+
+        const verifyOTP = await verificationOTP(otp)
+
+        if(verifyOTP === 'approved'){
+
+            const user = await Users.findOne({email : email})
+
+            user.isVerify = true
+
+             await user.save({ validateBeforeSave: true })
+
+            return res.status(200)
+            .json({
+                success: true,
+                message: 'verify successfully'
+            })
+        }else{
+            return res.status(400)
+            .json({
+                success: false,
+                message: 'otp not verify'
+            })
+        }
+    } catch (error) {
+        return res.status(500)
+            .json({
+                success: false,
+                data: [],
+                message: 'error in server' + error.message
+            })
+    }
+
+}
 
 module.exports = {
     user_register,
@@ -331,5 +383,6 @@ module.exports = {
     generate_new_token,
     logout_user,
     check_auth,
-    generate_token
+    generate_token,
+    check_verification
 }
