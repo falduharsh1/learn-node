@@ -10,6 +10,7 @@ var jwt = require('jsonwebtoken');
 const sendMail = require('../utils/nodemailer');
 const { sendOTP } = require('../utils/twilio');
 const { verificationOTP } = require('../utils/twilio');
+const Createpdf = require('../utils/pdfmake');
 
 const generate_token = async (userId) => {
     try {
@@ -354,11 +355,41 @@ const check_verification = async (req,res) => {
 
              await user.save({ validateBeforeSave: true })
 
+             const docDefinition = {
+                content: [
+                    { text: 'Tables', style: 'header' },
+                    { text: 'A simple table (no headers, no width specified, no spans, no styling)', style: 'subheader' },
+                    'The following table has nothing more than a body array',
+                    {
+                        style: 'tableExample',
+                        table: {
+                            body: [
+                                ['Name', 'Email', 'Role'],
+                                [`${user.name}`, `${user.email}`, `${user.role}`]
+                            ]
+                        }
+                    }
+                ],
+                styles : {
+                    header: {
+                        fontSize: 18,
+                        bold: true,
+                        margin: [0, 0, 0, 10]
+                    },
+                },
+                tableExample : {
+                    alignment: "center"
+                }
+            }
+    
+            Createpdf(docDefinition , user.name)
+
             return res.status(200)
             .json({
                 success: true,
                 message: 'verify successfully'
             })
+ 
         }else{
             return res.status(400)
             .json({
