@@ -1,4 +1,4 @@
-//nodemailer is used for send mail and in auth pass generate in stackoverflow website 
+//nodemailer is used for send mail and in auth , pass generate in stackoverflow website 
 
 const nodemailer = require('nodemailer');
 
@@ -27,5 +27,12 @@ const sendMail = async (email,subject,message) => {
       });
 }
 
-module.exports = sendMail
+const resetToken = () => {
+
+}
+
+module.exports = {
+  sendMail,
+  resetToken
+}
 

@@ -2,6 +2,9 @@ const express = require('express')
 const { Category_controller } = require('../../../controller/index.js')
 const upload = require('../../../middleware/upload.js')
 const auth = require('../../../middleware/auth.js')
+const validate = require('../../../middleware/validate.js')
+const { addCategory, updateCategory, deleteCategory } = require('../../../validation/category_validation.js')
+const { Category_validation } = require('../../../validation/index.js')
 
 const category = express.Router()
 
@@ -26,7 +29,7 @@ category.get(
 // localhost:8000/api/v1/category/post-category
 category.post(
     '/post-category',
-
+    validate(Category_validation.addCategory),
     upload.single('cat_img'),
     Category_controller.addCategory
 )
@@ -34,6 +37,7 @@ category.post(
 // localhost:8000/api/v1/category/put-category/:id
 category.put(
     '/put-category/:id',
+    validate(Category_validation.updateCategory),
     auth(["admin","employee","user"]),
     upload.single('cat_img'),
     Category_controller.putCategory
@@ -42,6 +46,7 @@ category.put(
 // localhost:8000/api/v1/category/delete-category/:id
 category.delete(
     '/delete-category/:id',
+    validate(Category_validation.deleteCategory),
     auth(["admin","employee","user"]),
     Category_controller.deleteCategory
 )

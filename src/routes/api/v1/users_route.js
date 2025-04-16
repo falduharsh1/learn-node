@@ -72,4 +72,10 @@ user.post(
     user_controller.check_verification
 )
 
+// localhost:8000/api/v1/user/forgot-password
+// user.post(
+//     '/forgot-password',
+//     user_controller.forgot_password
+// )
+
 module.exports = user

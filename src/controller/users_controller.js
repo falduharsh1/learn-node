@@ -4,6 +4,13 @@
 
 //npm i cookie-parser for creating cookie
 
+//npm i nodemailer is used for send mail
+
+//twilio is used for send otp and after verify otp ( used twilio website )
+
+//npm i pdfmake is used for make pdf of user ( in npm pdfmake, go on github )
+
+
 const bcrypt = require('bcrypt');
 const Users = require("../models/users_modele")
 var jwt = require('jsonwebtoken');
@@ -117,12 +124,12 @@ const user_login = async (req, res) => {
                 })
         }
 
-        if(user.isVerify === false){
+        if (user.isVerify === false) {
             return res.status(400)
-            .json({
-                success: false,
-                message: 'Please verify otp first'
-            })
+                .json({
+                    success: false,
+                    message: 'Please verify otp first'
+                })
         }
 
         const match_password = await bcrypt.compare(password, user.password)
@@ -300,7 +307,7 @@ const check_auth = async (req, res) => {
     try {
         const token = req.cookies.accessToken || req.headers.authorization?.replace("Bearer ", " ")
 
-        console.log("token", token);
+        // console.log("token", token);
 
         if (!token) {
             return res.status(401)
@@ -340,62 +347,85 @@ const check_auth = async (req, res) => {
     }
 }
 
-const check_verification = async (req,res) => {
+const check_verification = async (req, res) => {
 
     try {
         const { otp, email } = req.body
 
         const verifyOTP = await verificationOTP(otp)
 
-        if(verifyOTP === 'approved'){
+        if (verifyOTP === 'approved') {
 
-            const user = await Users.findOne({email : email})
+            const user = await Users.findOne({ email: email })
 
             user.isVerify = true
 
-             await user.save({ validateBeforeSave: true })
+            await user.save({ validateBeforeSave: true })
 
-             const docDefinition = {
+            const docDefinition = {
                 content: [
                     { text: 'Tables', style: 'header' },
-                    { text: 'A simple table (no headers, no width specified, no spans, no styling)', style: 'subheader' },
-                    'The following table has nothing more than a body array',
                     {
-                        style: 'tableExample',
-                        table: {
-                            body: [
-                                ['Name', 'Email', 'Role'],
-                                [`${user.name}`, `${user.email}`, `${user.role}`]
-                            ]
-                        }
-                    }
+                        columns: [
+                            { width: '*', text: '' },
+                            {
+                                style: 'tableExample',
+                                width: 'auto',
+                                table: {
+                                    body: [
+                                        ['Name', 'Email', 'Role'],
+                                        [`${user.name}`, `${user.email}`, `${user.role}`]
+                                    ]
+                                }
+                            },
+                            { width: '*', text: '' },
+                        ]
+                    },
+                    {
+                        style: 'photo',
+                        image: 'public/cat_img/Blueberry.jpg',
+                        width: 150,
+                        height: 150,
+                    },
+                    {
+                        text: 'Blueberries are eaten fresh or used to make bakery goods and jams. They contain vitamin C, vitamin A, and iron. Blueberry bushes are found in woods and hilly areas of North America, Great Britain, northern Europe, and Asia. In the United States blueberries are grown in Maine, New Jersey', style: 'paragraph'
+                    },
                 ],
-                styles : {
+
+                styles: {
                     header: {
                         fontSize: 18,
                         bold: true,
                         margin: [0, 0, 0, 10]
                     },
+                    photo: {
+                        margin: [0, 0, 15, 10],
+                        alignment: "center"
+                    },
+                    tableExample: {
+                        alignment: "center",
+                        margin: [0, 0, 15, 10]
+                    },
+                    paragraph: {
+                        alignment: "center"
+                    },
                 },
-                tableExample : {
-                    alignment: "center"
-                }
             }
-    
-            Createpdf(docDefinition , user.name)
+
+            Createpdf(docDefinition, user.name)
 
             return res.status(200)
-            .json({
-                success: true,
-                message: 'verify successfully'
-            })
- 
-        }else{
+                .json({
+                    success: true,
+                    message: 'verify successfully'
+                })
+
+        } else {
             return res.status(400)
-            .json({
-                success: false,
-                message: 'otp not verify'
-            })
+                .json({
+                    success: false,
+                    message: 'otp not verify'
+                })
         }
     } catch (error) {
         return res.status(500)
@@ -408,6 +438,43 @@ const check_verification = async (req,res) => {
 
 }
 
+// const forgot_password = async (req,res) => {
+//     try {
+//         const {email} = req.body
+
+//         console.log("REQ BODY:", req.body.email);
+
+//         const user = await Users.findOne({email : email})
+
+//         if(!user){
+//             return res.status(400)
+//             .json({
+//                 success: false,
+//                 data: [],
+//                 message: 'not found email'
+//             })
+//         }
+
+//         const otp = Math.floor(1000 + Math.random() * 9000);
+
+//         await sendMail(email,"For Your Forgot Password ",`Your OTP is : ${otp}`)
+
+//         return res.status(200)
+//         .json({
+//             success: true,
+//             message: 'email send sucessfully'
+//         })
+
+//     } catch (error) {
+//         return res.status(500)
+//             .json({
+//                 success: false,
+//                 data: [],
+//                 message: 'error in server' + error.message
+//             })
+//     }
+// }   
+
 module.exports = {
     user_register,
     user_login,
@@ -415,5 +482,6 @@ module.exports = {
     logout_user,
     check_auth,
     generate_token,
-    check_verification
+    check_verification,
+    // forgot_password
 }
