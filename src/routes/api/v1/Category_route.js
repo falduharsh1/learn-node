@@ -29,8 +29,9 @@ category.get(
 // localhost:8000/api/v1/category/post-category
 category.post(
     '/post-category',
-    validate(Category_validation.addCategory),
+    auth(["admin","employee","user"]),
     upload.single('cat_img'),
+    validate(Category_validation.addCategory),
     Category_controller.addCategory
 )
 

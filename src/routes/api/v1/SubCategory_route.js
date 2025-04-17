@@ -2,6 +2,8 @@ const express = require('express')
 const { subCategory_controller } = require('../../../controller')
 const upload = require('../../../middleware/upload')
 const auth = require('../../../middleware/auth')
+const validate = require('../../../middleware/validate')
+const { subCategory_validation } = require('../../../validation')
 
 const subcategory = express.Router()
 
@@ -26,6 +28,7 @@ subcategory.get(
 // localhost:8000/api/v1/subcategory/post-subcategory
 subcategory.post(
     '/post-subcategory',
+    validate(subCategory_validation.addsubCategory),
     upload.single('subCat_img'),
     subCategory_controller.addSubCategory
 )
@@ -33,6 +36,7 @@ subcategory.post(
 // localhost:8000/api/v1/subcategory/put-subcategory/:id
 subcategory.put(
     '/put-subcategory/:id',
+    validate(subCategory_validation.updatesubCategory),
     auth(["admin","employee"]),
     upload.single('subCat_img'),
     subCategory_controller.putSubCategory
@@ -41,6 +45,7 @@ subcategory.put(
 // localhost:8000/api/v1/subcategory/delete-subcategory/:id
 subcategory.delete(
     '/delete-subcategory/:id',
+    validate(subCategory_validation.deletesubCategory),
     auth(["admin","employee"]),
     subCategory_controller.deleteSubCategory
 )

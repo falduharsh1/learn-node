@@ -7,6 +7,12 @@ const storage = multer.diskStorage({
 
         console.log("files",file);
 
+        const ext = path.extname(file.originalname).toLowerCase()
+
+        if(!(ext === '.png' || ext === '.jpg')){
+            return cb(new Error('Only png and jpg file are allowed'))
+        }
+
         const filePath = path.join("public",file.fieldname)
 
         fs.mkdir(filePath , {recursive : true} , (err) => {
