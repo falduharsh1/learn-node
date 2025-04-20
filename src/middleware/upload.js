@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
         const ext = path.extname(file.originalname).toLowerCase()
 
         if(!(ext === '.png' || ext === '.jpg')){
-            return cb(new Error('Only png and jpg file are allowed'))
+            return cb(new Error('Only png and jpg files are allowed'))
         }
 
         const filePath = path.join("public",file.fieldname)

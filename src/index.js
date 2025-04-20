@@ -10,6 +10,7 @@ require('dotenv').config()
 const express = require('express');
 const passport = require('passport');
 const Googlestrategy = require('./utils/provider');
+const connectChat = require('./utils/soketIO');
 const app = express();
 
 app.use(express.json())
@@ -17,6 +18,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 connectDB()
+connectChat()
 
 var corsOptions = {
   origin: 'http://localhost:3000',

@@ -38,17 +38,17 @@ category.post(
 // localhost:8000/api/v1/category/put-category/:id
 category.put(
     '/put-category/:id',
-    validate(Category_validation.updateCategory),
     auth(["admin","employee","user"]),
     upload.single('cat_img'),
+    validate(Category_validation.updateCategory),
     Category_controller.putCategory
 )
 
 // localhost:8000/api/v1/category/delete-category/:id
 category.delete(
     '/delete-category/:id',
-    validate(Category_validation.deleteCategory),
     auth(["admin","employee","user"]),
+    validate(Category_validation.deleteCategory),
     Category_controller.deleteCategory
 )
 
