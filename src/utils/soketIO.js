@@ -11,11 +11,15 @@ const connectChat = () => {
         io.on("connection", (socket) => {
             console.log("socket", socket.id);
 
-            socket.on("Send_message", (msg) => {
-                console.log('Send_message');
+            socket.on("Send_message", ({message,to}) => {
+                console.log(message,to);
                 
-                io.emit("receive_message", msg);
+                io.to(to).emit("receive_message", message);
               });
+
+              socket.on("group_name",(group) => {
+                socket.join(group)
+              })
 
         });
 
