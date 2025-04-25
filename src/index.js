@@ -35,6 +35,12 @@ app.use(passport.session());
 
 Googlestrategy()
 
+app.get("/",(req,res) => {
+  res.status(200).json({
+    message : 'Deployement successfull'
+  })
+})
+
 app.use('/api/v1', router)
 
 app.listen(process.env.PORT, () => {
