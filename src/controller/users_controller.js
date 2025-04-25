@@ -438,42 +438,42 @@ const check_verification = async (req, res) => {
 
 }
 
-// const forgot_password = async (req,res) => {
-//     try {
-//         const {email} = req.body
+const forgot_password = async (req,res) => {
+    try {
+        const {email} = req.body
 
-//         console.log("REQ BODY:", req.body.email);
+        console.log("REQ BODY:", req.body.email);
 
-//         const user = await Users.findOne({email : email})
+        const user = await Users.findOne({email : email})
 
-//         if(!user){
-//             return res.status(400)
-//             .json({
-//                 success: false,
-//                 data: [],
-//                 message: 'not found email'
-//             })
-//         }
+        if(!user){  
+            return res.status(400)
+            .json({
+                success: false,
+                data: [],
+                message: 'not found email'
+            })
+        }
 
-//         const otp = Math.floor(1000 + Math.random() * 9000);
+        const otp = Math.floor(1000 + Math.random() * 9000);
 
-//         await sendMail(email,"For Your Forgot Password ",`Your OTP is : ${otp}`)
+        await sendMail(email,"For Your Forgot Password ",`Your OTP is : ${otp}`)
 
-//         return res.status(200)
-//         .json({
-//             success: true,
-//             message: 'email send sucessfully'
-//         })
+        return res.status(200)
+        .json({
+            success: true,
+            message: 'email send sucessfully'
+        })
 
-//     } catch (error) {
-//         return res.status(500)
-//             .json({
-//                 success: false,
-//                 data: [],
-//                 message: 'error in server' + error.message
-//             })
-//     }
-// }   
+    } catch (error) {
+        return res.status(500)
+            .json({
+                success: false,
+                data: [],
+                message: 'error in server' + error.message
+            })
+    }
+}   
 
 module.exports = {
     user_register,
@@ -483,5 +483,5 @@ module.exports = {
     check_auth,
     generate_token,
     check_verification,
-    // forgot_password
+    forgot_password
 }
