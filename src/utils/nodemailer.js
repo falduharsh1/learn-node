@@ -1,7 +1,7 @@
 //nodemailer is used for send mail and in auth , pass generate in stackoverflow website 
 
 const nodemailer = require('nodemailer');
-const Resend = require('resend')
+const {Resend} = require('resend')
 
 // const sendMail = async (email,subject,message) => {
 //     const transporter = await nodemailer.createTransport({
