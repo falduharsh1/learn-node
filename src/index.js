@@ -43,9 +43,11 @@ app.get("/",(req,res) => {
 
 app.use('/api/v1', router)
 
-app.listen(process.env.PORT, () => {
-  console.log(`Example app listening on port`)
-})
+// app.listen(process.env.PORT, () => {
+//   console.log(`Example app listening on port`)
+// })
+
+module.exports = app
 
 console.log("hello node !", );
 
