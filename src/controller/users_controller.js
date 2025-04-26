@@ -14,7 +14,7 @@
 const bcrypt = require('bcrypt');
 const Users = require("../models/users_modele")
 var jwt = require('jsonwebtoken');
-const sendMail = require('../utils/nodemailer');
+const {sendMail} = require('../utils/nodemailer');
 const { sendOTP } = require('../utils/twilio');
 const { verificationOTP } = require('../utils/twilio');
 const Createpdf = require('../utils/pdfmake');
@@ -76,16 +76,21 @@ const user_register = async (req, res) => {
 
             const otp = Math.floor(1000 + Math.random() * 9000);
 
-            sendMail(email,"Verify your fruitable acount",`Your OTP is : ${otp}`)
+            let emailStatus = await sendMail(email,"Verify your fruitable acount",`Your OTP is : ${otp}`)
 
-            // sendOTP();
-
-            return res.status(201)
+            console.log(emailStatus);
+            
+            if (emailStatus) {
+                return res.status(201)
                 .json({
                     success: true,
                     data: userData,
                     message: 'successFully register , please verify otp'
                 })
+            }
+            // sendOTP();
+
+           
 
         } catch (error) {
             return res.status(500)
