@@ -76,9 +76,9 @@ const user_register = async (req, res) => {
 
             const otp = Math.floor(1000 + Math.random() * 9000);
 
-            // sendMail(email,"Verify your fruitable acount",`Your OTP is : ${otp}`)
+            sendMail(email,"Verify your fruitable acount",`Your OTP is : ${otp}`)
 
-            sendOTP();
+            // sendOTP();
 
             return res.status(201)
                 .json({
