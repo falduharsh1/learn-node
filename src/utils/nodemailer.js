@@ -30,7 +30,7 @@ const Resend = require('resend')
 
 const sendMail = async (email, subject, message) => {
   try {
-    const resend = new Resend('re_2sBjqLfU_BpEmpPAE5cvsqqiJqcbZEeKZ');
+    const resend = new Resend(process.env.RESEND_EMAIL);
 
     await resend.emails.send({
       from: 'onboarding@resend.dev',
