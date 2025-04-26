@@ -21,7 +21,7 @@ connectDB()
 connectChat()
 
 var corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: 'https://fruitables-mu.vercel.app/',
   optionsSuccessStatus: 200 ,
   credentials : true
 }
