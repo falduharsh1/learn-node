@@ -85,9 +85,8 @@ const user_register = async (req, res) => {
             const options = {
                 httpOnly: true,
                 secure: true,
-                sameSite : 'none',
-                maxAge : 60 * 5 * 1000,
-                domain: 'learn-node-rho.vercel.app'
+                sameSite: 'None',
+                maxAge: 60 * 5 * 1000
             }
 
             if (emailStatus) {
