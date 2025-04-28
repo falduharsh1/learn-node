@@ -82,10 +82,16 @@ const user_register = async (req, res) => {
 
             const otp_token = await jwt.sign({email,otp},process.env.OTP_TOKEN ,{expiresIn:  '6h' })
         
+            const options = {
+                httpOnly: true,
+                secure: true,
+                sameSite : 'None',
+                maxAge : 60 * 5 * 1000
+            }
 
             if (emailStatus) {
                 return res.status(201)
-                .cookie("otp_token",otp_token)
+                .cookie("otp_token",otp_token, options)
                 .json({
                     success: true,
                     data: userData,
