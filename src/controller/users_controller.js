@@ -80,7 +80,8 @@ const user_register = async (req, res) => {
 
             console.log(emailStatus);
 
-            const otp_token = jwt.sign({email,otp},process.env.OTP_TOKEN ,{expiresIn:  '6h' })
+            const otp_token = await jwt.sign({email,otp},process.env.OTP_TOKEN ,{expiresIn:  '6h' })
+        
 
             if (emailStatus) {
                 return res.status(201)
