@@ -85,7 +85,7 @@ const user_register = async (req, res) => {
             const options = {
                 httpOnly: true,
                 secure: true,
-                sameSite : 'None',
+                sameSite : 'none',
                 maxAge : 60 * 5 * 1000
             }
 
