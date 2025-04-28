@@ -78,4 +78,9 @@ user.post(
     user_controller.forgot_password
 )
 
+// localhost:8000/api/v1/user/check-otp-email
+user.post(
+    '/check-otp-email',
+    user_controller.check_otp_email
+)
 module.exports = user

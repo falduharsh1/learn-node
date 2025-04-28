@@ -79,9 +79,12 @@ const user_register = async (req, res) => {
             let emailStatus = await sendMail(email,"Verify your fruitable acount",`Your OTP is : ${otp}`)
 
             console.log(emailStatus);
-            
+
+            const otp_token = jwt.sign({email,otp},process.env.OTP_TOKEN ,{expiresIn:  '6h' })
+
             if (emailStatus) {
                 return res.status(201)
+                .cookie("otp_token",otp_token)
                 .json({
                     success: true,
                     data: userData,
@@ -89,8 +92,6 @@ const user_register = async (req, res) => {
                 })
             }
             // sendOTP();
-
-           
 
         } catch (error) {
             return res.status(500)
@@ -154,14 +155,23 @@ const user_login = async (req, res) => {
 
         console.log("login", accessToken, refreshToken);
 
-        const options = {
+        const optionsAcc = {
             httpOnly: true,
-            secure: true
+            secure: true,
+            sameSite : 'None',
+            maxAge : 60 * 60 * 1000
+        }
+
+        const optionsRef = {
+            httpOnly: true,
+            secure: true,
+            sameSite : 'None',
+            maxAge : 60 * 60 * 24 * 1000
         }
 
         return res.status(200)
-            .cookie("accessToken", accessToken, options)
-            .cookie("refreshToken", refreshToken, options)
+            .cookie("accessToken", accessToken, optionsAcc)
+            .cookie("refreshToken", refreshToken, optionsRef)
             .json({
                 success: true,
                 data: userData,
@@ -237,14 +247,23 @@ const generate_new_token = async (req, res) => {
 
             console.log("login", accessToken, refreshToken);
 
-            const options = {
+            const optionsAcc = {
                 httpOnly: true,
-                secure: true
+                secure: true,
+                sameSite : 'None',
+                maxAge : 60 * 60 * 1000
+            }
+
+            const optionsRef = {
+                httpOnly: true,
+                secure: true,
+                sameSite : 'None',
+                maxAge : 60 * 60 * 24 * 1000
             }
 
             return res.status(200)
-                .cookie("accessToken", accessToken, options)
-                .cookie("refreshToken", refreshToken, options)
+                .cookie("accessToken", accessToken, optionsAcc)
+                .cookie("refreshToken", refreshToken, optionsRef)
                 .json({
                     success: true,
                     data: userData,
@@ -287,7 +306,8 @@ const logout_user = async (req, res) => {
 
         const options = {
             httpOnly: true,
-            secure: true
+            secure: true,
+            sameSite : 'None'
         }
 
         return res.status(200)
@@ -478,7 +498,64 @@ const forgot_password = async (req,res) => {
                 message: 'error in server' + error.message
             })
     }
-}   
+}  
+
+const check_otp_email = async (req,res) => {
+    try {
+        const {email,otp} =  req.body
+
+        console.log(email,otp);
+        
+
+        const token = req.cookies.otp_token || req.headers.authorization?.replace("Bearer ", "")
+
+        console.log(token);
+        
+        if (!token) {
+            return res.status(400)
+                .json({
+                    success: false,
+                    message: 'Token Not Found'
+                })
+        }
+
+        const verifyToken = jwt.verify(token, process.env.OTP_TOKEN)
+
+        if (!verifyToken) {
+            return res.status(400)
+                .json({
+                    success: false,
+                    data: [],
+                    message: 'Not verify'
+                })
+        }
+
+        console.log(verifyToken);
+        
+
+        if(verifyToken.email === email && verifyToken.otp === parseInt(otp)){
+
+            const user = await Users.findOne({ email: email })
+            user.isVerify = true
+
+            await user.save({ validateBeforeSave: true })
+
+            return res.status(200)
+            .json({
+                success: true,
+                message: 'otp verify successfully'
+            })
+        }
+
+    } catch (error) {
+        return res.status(500)
+        .json({
+            success: false,
+            data: [],
+            message: 'error in server' + error.message
+        })
+    }
+}
 
 module.exports = {
     user_register,
@@ -488,5 +565,6 @@ module.exports = {
     check_auth,
     generate_token,
     check_verification,
-    forgot_password
+    forgot_password,
+    check_otp_email
 }
