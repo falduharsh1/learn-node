@@ -72,7 +72,7 @@ const user_register = async (req, res) => {
 
             const User = await Users.create({ ...req.body, password: hashPassword })
 
-            const userData = await Users.findById(User._id).select('-password ')
+            const userData = await Users.findById(User._id).select('-password')
 
             const otp = Math.floor(1000 + Math.random() * 9000);
 
@@ -101,6 +101,8 @@ const user_register = async (req, res) => {
             // sendOTP();
 
         } catch (error) {
+            console.log("errorrr", error);
+            
             return res.status(500)
                 .json({
                     success: false,
