@@ -104,7 +104,7 @@ const addCategory = async (req, res) => {
         console.log("addImg",addImg);
         
 
-        const category = await Categories.create({ ...req.body, cat_img: addImg.url })
+        const category = await Categories.create({ ...req.body, cat_img: {url: addImg.url, public_id: addImg.public_id} })
 
         if (!category) {
             return res.status(400)
