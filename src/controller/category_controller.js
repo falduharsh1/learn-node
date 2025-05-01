@@ -157,8 +157,7 @@ const putCategory = async (req, res) => {
 
             category = await Categories.findByIdAndUpdate(req.params.id, { ...req.body, cat_img: { url: updateImg.url, public_id: updateImg.public_id } }, { new: true })
 
-            cloudinaryUploadImg(req.file.path, "category")
-
+            
         } else {
 
             category = await Categories.findByIdAndUpdate(req.params.id, req.body, { new: true })
