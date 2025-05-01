@@ -1,4 +1,4 @@
-const { error } = require("console");
+const { error, log } = require("console");
 const Categories = require("../models/category_modele");
 const fs = require("fs");
 const { default: mongoose } = require("mongoose");
@@ -139,6 +139,8 @@ const putCategory = async (req, res) => {
 
             const categoryObj = await Categories.findById(req.params.id)
 
+            console.log("categoryObj",categoryObj);
+            
             // fs.unlink(categoryObj.cat_img, (err) => {
             //     if (err) {
             //         return res.status(400).json({
@@ -152,6 +154,9 @@ const putCategory = async (req, res) => {
            await deleteCloudinaryImg(categoryObj.cat_img.public_id)
 
             const updateImg = await cloudinaryUploadImg(req.file.path, "category")
+
+            console.log("updateImg",updateImg);
+            
 
             // category = await Categories.findByIdAndUpdate(req.params.id, { ...req.body, cat_img: req.file.path }, { new: true })
 
