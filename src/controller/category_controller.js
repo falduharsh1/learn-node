@@ -139,16 +139,18 @@ const putCategory = async (req, res) => {
 
             const categoryObj = await Categories.findById(req.params.id)
 
+            deleteCloudinaryImg(categoryObj.cat_img.public_id)
+            cloudinaryUploadImg(req.file.path , "category")
 
-            fs.unlink(categoryObj.cat_img, (err) => {
-                if (err) {
-                    return res.status(400).json({
-                        success: false,
-                        data: [],
-                        message: 'error in server' + err
-                    })
-                }
-            })
+            // fs.unlink(categoryObj.cat_img, (err) => {
+            //     if (err) {
+            //         return res.status(400).json({
+            //             success: false,
+            //             data: [],
+            //             message: 'error in server' + err
+            //         })
+            //     }
+            // })
 
 
             category = await Categories.findByIdAndUpdate(req.params.id, { ...req.body, cat_img: req.file.path }, { new: true })
