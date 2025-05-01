@@ -200,15 +200,15 @@ const deleteCategory = async (req, res) => {
             })
         }
 
-        fs.unlink(category.cat_img, (err) => {
-            if (err) {
-                return res.status(400).json({
-                    success: false,
-                    data: null,
-                    message: 'image delete'
-                })
-            }
-        })
+        // fs.unlink(category.cat_img, (err) => {
+        //     if (err) {
+        //         return res.status(400).json({
+        //             success: false,
+        //             data: null,
+        //             message: 'image delete'
+        //         })
+        //     }
+        // })
 
         return res.status(200).json({
             success: true,
