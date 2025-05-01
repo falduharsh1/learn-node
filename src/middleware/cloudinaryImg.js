@@ -11,7 +11,6 @@ const cloudinaryUploadImg = async (imgPath,folderName) => {
      const uploadResult = await cloudinary.uploader
        .upload(
         imgPath, {
-            public_id: folderName,
             folderName: folderName
            }
        )
