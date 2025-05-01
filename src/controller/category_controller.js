@@ -139,8 +139,6 @@ const putCategory = async (req, res) => {
 
             const categoryObj = await Categories.findById(req.params.id)
 
-            deleteCloudinaryImg()
-            cloudinaryUploadImg()
 
             // fs.unlink(categoryObj.cat_img, (err) => {
             //     if (err) {
@@ -155,6 +153,9 @@ const putCategory = async (req, res) => {
 
             category = await Categories.findByIdAndUpdate(req.params.id, { ...req.body, cat_img: req.file.path }, { new: true })
 
+            deleteCloudinaryImg(categoryObj.cat_img.public_id)
+            cloudinaryUploadImg(req.file.path, "category")
+            
         } else {
 
             category = await Categories.findByIdAndUpdate(req.params.id, req.body, { new: true })
