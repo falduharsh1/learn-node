@@ -2,7 +2,7 @@ const { error } = require("console");
 const Categories = require("../models/category_modele");
 const fs = require("fs");
 const { default: mongoose } = require("mongoose");
-const {cloudinaryUploadImg, deleteCloudinaryImg} = require("../middleware/cloudinaryImg");
+const { cloudinaryUploadImg, deleteCloudinaryImg } = require("../middleware/cloudinaryImg");
 
 const listCategory = async (req, res) => {
     try {
@@ -99,12 +99,12 @@ const addCategory = async (req, res) => {
 
         console.log(req.body, req.file);
 
-        const addImg = await cloudinaryUploadImg(req.file.path , "category")
+        const addImg = await cloudinaryUploadImg(req.file.path, "category")
 
-        console.log("addImg",addImg);
-        
+        console.log("addImg", addImg);
 
-        const category = await Categories.create({ ...req.body, cat_img: {url: addImg.url, public_id: addImg.public_id} })
+
+        const category = await Categories.create({ ...req.body, cat_img: { url: addImg.url, public_id: addImg.public_id } })
 
         if (!category) {
             return res.status(400)
@@ -134,7 +134,7 @@ const addCategory = async (req, res) => {
 
 const putCategory = async (req, res) => {
     try {
-        let category    
+        let category
         if (req.file) {
 
             const categoryObj = await Categories.findById(req.params.id)
@@ -150,12 +150,15 @@ const putCategory = async (req, res) => {
             //     }
             // })
 
+            const updateImg = await cloudinaryUploadImg(req.file.path, "category")
 
-            category = await Categories.findByIdAndUpdate(req.params.id, { ...req.body, cat_img: req.file.path }, { new: true })
+            // category = await Categories.findByIdAndUpdate(req.params.id, { ...req.body, cat_img: req.file.path }, { new: true })
+
+            category = await Categories.findByIdAndUpdate(req.params.id, { ...req.body, cat_img: { url: updateImg.url, public_id: updateImg.public_id } }, { new: true })
 
             deleteCloudinaryImg(categoryObj.cat_img.public_id)
             cloudinaryUploadImg(req.file.path, "category")
-            
+
         } else {
 
             category = await Categories.findByIdAndUpdate(req.params.id, req.body, { new: true })
@@ -273,56 +276,56 @@ const mostProducts = async (req, res) => {
         const mostProduct = await Categories.aggregate(
             [
                 {
-                  $lookup: {
-                    from: 'products',
-                    localField: '_id',
-                    foreignField: 'category',
-                    as: 'productData'
-                  }
+                    $lookup: {
+                        from: 'products',
+                        localField: '_id',
+                        foreignField: 'category',
+                        as: 'productData'
+                    }
                 },
                 {
-                  $addFields: {
-                    products : {$size : '$productData'}
-                  }
+                    $addFields: {
+                        products: { $size: '$productData' }
+                    }
                 },
                 {
-                  $project: {
-                    Cat_name : '$name',
-                    products : 1
-                  }
-                },
-                {
-                  $sort: {
-                    products: -1
-                  }
+                    $project: {
+                        Cat_name: '$name',
+                        products: 1
+                    }
                 },
                 {
-                  $limit: 1
+                    $sort: {
+                        products: -1
+                    }
+                },
+                {
+                    $limit: 1
                 }
-              ]
+            ]
         )
 
-        if(!mostProduct){
+        if (!mostProduct) {
             return res.status(400)
                 .json({
-                    success : false,
-                    data : [],
-                    message : 'error in getting most product'
+                    success: false,
+                    data: [],
+                    message: 'error in getting most product'
                 })
         }
 
         return res.status(200)
             .json({
-                success : true,
-                data : mostProduct,
-                message : ' Successfull getting most product'
+                success: true,
+                data: mostProduct,
+                message: ' Successfull getting most product'
             })
     } catch (error) {
         return res.status(500)
             .json({
-                success : false,
-                data : [],
-                message : 'error in server' + error.message
+                success: false,
+                data: [],
+                message: 'error in server' + error.message
             })
     }
 }
@@ -340,14 +343,14 @@ const inactive = async (req, res) => {
         const inActiveUser = await Categories.aggregate(
             [
                 {
-                  $match: {
-                    isActive : 'false'
-                  }
+                    $match: {
+                        isActive: 'false'
+                    }
                 },
                 {
-                  $count: 'InActiveUser'
+                    $count: 'InActiveUser'
                 }
-              ]
+            ]
         )
 
         if (!inActiveUser) {
@@ -381,100 +384,100 @@ const countSubcategories = async (req, res) => {
         const CountSubCat = await Categories.aggregate(
             [
                 {
-                  $lookup: {
-                    from: 'subcategoryes',
-                    localField: '_id',
-                    foreignField: 'category',
-                    as: 'subCat_data'
-                  }
+                    $lookup: {
+                        from: 'subcategoryes',
+                        localField: '_id',
+                        foreignField: 'category',
+                        as: 'subCat_data'
+                    }
                 },
                 {
-                  $project: {
-                    name : 1,
-                    SubCatCount : {$size : '$subCat_data'}
-                  }
+                    $project: {
+                        name: 1,
+                        SubCatCount: { $size: '$subCat_data' }
+                    }
                 }
-              ]
+            ]
         )
 
-        if(!CountSubCat){
+        if (!CountSubCat) {
             return res.status(400)
                 .json({
-                    success : false,
-                    data : [],
-                    message : 'error in count subcategory'
+                    success: false,
+                    data: [],
+                    message: 'error in count subcategory'
                 })
         }
 
         return res.status(200)
             .json({
-                success : true,
-                data : CountSubCat,
-                message : 'Count subcategory successFull'
+                success: true,
+                data: CountSubCat,
+                message: 'Count subcategory successFull'
             })
 
     } catch (error) {
         return res.status(500)
             .json({
-                success : false,
-                data : [],
-                message : 'error in server' + error.message
+                success: false,
+                data: [],
+                message: 'error in server' + error.message
             })
     }
 }
 
-const SubCat_by_CatID = async (req,res) => {
+const SubCat_by_CatID = async (req, res) => {
     try {
         console.log(req.params.id);
 
         // let ids = req.params.id
-        
+
         const subcat_catId = await Categories.aggregate(
-              [
+            [
                 {
-                  $lookup: {
-                    from: "subcategoryes",
-                    localField: "_id",
-                    foreignField: "category",
-                    as: "subcatData"
-                  }
+                    $lookup: {
+                        from: "subcategoryes",
+                        localField: "_id",
+                        foreignField: "category",
+                        as: "subcatData"
+                    }
                 },
                 {
-                  $match: {
-                    _id: new mongoose.Types.ObjectId(req.params.id)
-                  }
+                    $match: {
+                        _id: new mongoose.Types.ObjectId(req.params.id)
+                    }
                 },
                 {
-                  $project: {
-                    cat_name: "$name",
-                    subCat_name: "$subcatData.name"
-                  }
+                    $project: {
+                        cat_name: "$name",
+                        subCat_name: "$subcatData.name"
+                    }
                 }
-              ]
+            ]
         )
 
-        if(!subcat_catId){
+        if (!subcat_catId) {
             return res.status(400)
                 .json({
-                    success : false,
-                    data : [],
-                    message : 'error in getting subcategory'
+                    success: false,
+                    data: [],
+                    message: 'error in getting subcategory'
                 })
         }
 
         return res.status(200)
             .json({
-                success : true,
-                data : subcat_catId,
-                message : 'successFull'
+                success: true,
+                data: subcat_catId,
+                message: 'successFull'
             })
-        
+
     } catch (error) {
         return res.status(500)
             .json({
-                success : false,
-                data : [],
-                message : 'error in server' + error.message
+                success: false,
+                data: [],
+                message: 'error in server' + error.message
             })
     }
 }
