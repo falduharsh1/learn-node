@@ -1,12 +1,12 @@
 const cloudinary = require("cloudinary").v2;
 
+cloudinary.config({ 
+    cloud_name: 'dudpsgpqx', 
+    api_key: process.env.CLOUDINARY_API_Key, 
+    api_secret: process.env.CLOUDINARY_API_Secret 
+});
+
 const cloudinaryUploadImg = async (imgPath,folderName) => {
-    cloudinary.config({ 
-        cloud_name: 'dudpsgpqx', 
-        api_key: process.env.CLOUDINARY_API_Key, 
-        api_secret: process.env.CLOUDINARY_API_Secret 
-    });
-    
     // Upload an image
      const uploadResult = await cloudinary.uploader
        .upload(
@@ -23,4 +23,15 @@ const cloudinaryUploadImg = async (imgPath,folderName) => {
     return uploadResult;
 }
 
-module.exports = cloudinaryUploadImg
+const deleteCloudinaryImg = async(public_id) => {
+    try {
+        await cloudinary.uploader.destroy(public_id);
+    } catch (error) {
+        throw new Error("Error in delete cloudinary image: " + error);
+    }
+}
+
+module.exports = {
+    cloudinaryUploadImg,
+    deleteCloudinaryImg
+}

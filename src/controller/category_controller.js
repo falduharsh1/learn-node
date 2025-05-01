@@ -2,7 +2,7 @@ const { error } = require("console");
 const Categories = require("../models/category_modele");
 const fs = require("fs");
 const { default: mongoose } = require("mongoose");
-const cloudinaryUploadImg = require("../middleware/cloudinaryImg");
+const {cloudinaryUploadImg, deleteCloudinaryImg} = require("../middleware/cloudinaryImg");
 
 const listCategory = async (req, res) => {
     try {
@@ -189,6 +189,8 @@ const deleteCategory = async (req, res) => {
         const category = await Categories.findByIdAndDelete(req.params.id)
 
         console.log(category);
+
+        await deleteCloudinaryImg(category.cat_img.public_id)
 
         if (!category) {
             return res.status(400).json({
