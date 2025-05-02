@@ -134,6 +134,7 @@ const addCategory = async (req, res) => {
 
 const putCategory = async (req, res) => {
     try {
+        console.log("putCategory",req.body, req.file);
         let category
         if (req.file) {
 
