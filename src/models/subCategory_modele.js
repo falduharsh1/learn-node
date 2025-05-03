@@ -18,8 +18,10 @@ const subCategorySchema = new mongoose.Schema(
             trim : true,
         },
         subCat_img : {
-            type: String,
-            required: true,
+            type: {
+                public_id: String,
+                url: String
+            }
         }
     },
 

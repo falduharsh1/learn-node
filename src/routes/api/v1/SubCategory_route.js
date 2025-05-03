@@ -28,25 +28,25 @@ subcategory.get(
 // localhost:8000/api/v1/subcategory/post-subcategory
 subcategory.post(
     '/post-subcategory',
-    validate(subCategory_validation.addsubCategory),
     upload.single('subCat_img'),
+    validate(subCategory_validation.addsubCategory),
     subCategory_controller.addSubCategory
 )
 
 // localhost:8000/api/v1/subcategory/put-subcategory/:id
 subcategory.put(
     '/put-subcategory/:id',
-    validate(subCategory_validation.updatesubCategory),
-    auth(["admin","employee"]),
+    auth(["admin","employee","user"]),
     upload.single('subCat_img'),
+    validate(subCategory_validation.updatesubCategory),
     subCategory_controller.putSubCategory
 )
 
 // localhost:8000/api/v1/subcategory/delete-subcategory/:id
 subcategory.delete(
     '/delete-subcategory/:id',
+    auth(["admin","employee","user"]),
     validate(subCategory_validation.deletesubCategory),
-    auth(["admin","employee"]),
     subCategory_controller.deleteSubCategory
 )
 

@@ -1,3 +1,4 @@
+const { deleteCloudinaryImg, cloudinaryUploadImg } = require("../middleware/cloudinaryImg");
 const SubCategoryes = require("../models/subCategory_modele");
 const fs = require("fs")
 
@@ -112,7 +113,11 @@ const addSubCategory = async (req, res) => {
 
         console.log(req.body, req.file);
 
-        const subCategory = await SubCategoryes.create({ ...req.body, subCat_img: req.file.path })
+         const addImg = await cloudinaryUploadImg(req.file.path, "Subcategory")
+        
+         console.log("addImg", addImg);
+
+        const subCategory = await SubCategoryes.create({ ...req.body, subCat_img: { url: addImg.url, public_id: addImg.public_id } })
 
         if (!subCategory) {
             return res.status(400)
@@ -151,17 +156,23 @@ const putSubCategory = async (req, res) => {
         if (req.file) {
             const subCategoryObj = await SubCategoryes.findById(req.params.id)
 
-            fs.unlinkSync(subCategoryObj.subCat_img, (err) => {
-                if (err) {
-                    return res.status(400).json({
-                        success: false,
-                        data: [],
-                        message: 'error in delete Subcategory'
-                    })
-                }
-            })
+            // fs.unlinkSync(subCategoryObj.subCat_img, (err) => {
+            //     if (err) {
+            //         return res.status(400).json({
+            //             success: false,
+            //             data: [],
+            //             message: 'error in delete Subcategory'
+            //         })
+            //     }
+            // })
 
-            Subcategory = await SubCategoryes.findByIdAndUpdate(req.params.id, { ...req.body, subCat_img: req.file.path }, { new: true })
+            await deleteCloudinaryImg(subCategoryObj.subCat_img.public_id)
+
+            const updateImg = await cloudinaryUploadImg(req.file.path, "Subcategory")
+        
+            console.log("addImg", updateImg);
+
+            Subcategory = await SubCategoryes.findByIdAndUpdate(req.params.id, { ...req.body, subCat_img: { url: updateImg.url, public_id: updateImg.public_id } }, { new: true })
 
         } else {
             Subcategory = await SubCategoryes.findByIdAndUpdate(req.params.id, req.body, { new: true })
@@ -195,6 +206,8 @@ const putSubCategory = async (req, res) => {
 const deleteSubCategory = async (req, res) => {
     try {
         const subcategory = await SubCategoryes.findByIdAndDelete(req.params.id)
+
+        await deleteCloudinaryImg(subcategory.subCat_img.public_id)
 
         if (!subcategory) {
             return res.status(400).json({
