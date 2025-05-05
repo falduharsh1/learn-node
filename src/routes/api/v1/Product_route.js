@@ -2,6 +2,8 @@ const express = require('express');
 const { Product_controller } = require('../../../controller');
 const upload = require('../../../middleware/upload');
 const auth = require('../../../middleware/auth');
+const validate = require('../../../middleware/validate');
+const { Product_validation } = require('../../../validation');
 const router = express.Router();
 
 //localhost:8000/api/v1/product/get-product
@@ -31,21 +33,24 @@ router.get(
 router.post(
     '/post-product',
     upload.single('product_img'),
+    validate(Product_validation.addProduct),
     Product_controller.addProduct
 )
 
 //localhost:8000/api/v1/product/put-product/:id
 router.put(
     '/put-product/:id',
-    auth(["admin","employee"]),
+    auth(["admin","employee","user"]),
     upload.single('product_img'),
+    validate(Product_validation.updateProduct),
     Product_controller.putProduct
 )
 
 //localhost:8000/api/v1/product/delete-product/:id
 router.delete(
     '/delete-product/:id',
-    auth(["admin","employee"]),
+    auth(["admin","employee","user"]),
+    validate(Product_validation.deleteProduct),
     Product_controller.deleteProduct
 )
 

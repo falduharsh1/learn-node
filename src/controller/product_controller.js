@@ -1,3 +1,4 @@
+const { cloudinaryUploadImg, deleteCloudinaryImg } = require("../middleware/cloudinaryImg");
 const Products = require("../models/product_modele");
 const SubCategoryes = require("../models/subCategory_modele");
 const fs = require("fs")
@@ -263,7 +264,11 @@ const addProduct = async (req, res) => {
         console.log('okAdd',);
         console.log(req.body, req.file);
 
-        const Product = await Products.create({ ...req.body, product_img: req.file.path })
+         const productImg = await cloudinaryUploadImg(req.file.path, "product")
+                
+        console.log("productImg", productImg);
+
+        const Product = await Products.create({ ...req.body, product_img: {url : productImg.url , public_id : productImg.public_id} })
 
         if (!Product) {
             return res.status(400)
@@ -300,17 +305,23 @@ const putProduct = async (req, res) => {
         if (req.file) {
             const productobj = await Products.findById(req.params.id)
 
-            fs.unlinkSync(productobj.product_img, (err) => {
-                if (err) {
-                    return res.status(400).json({
-                        success: false,
-                        data: [],
-                        message: 'error in delete product'
-                    })
-                }
-            })
+            // fs.unlinkSync(productobj.product_img, (err) => {
+            //     if (err) {
+            //         return res.status(400).json({
+            //             success: false,
+            //             data: [],
+            //             message: 'error in delete product'
+            //         })
+            //     }
+            // })
 
-            product = await Products.findByIdAndUpdate(req.params.id, { ...req.body, product_img: req.file.path }, { new: true })
+            await deleteCloudinaryImg(productobj.product_img.public_id)
+
+            const productImg = await cloudinaryUploadImg(req.file.path, "product")
+                
+            console.log("productImg", productImg);
+
+            product = await Products.findByIdAndUpdate(req.params.id, { ...req.body, product_img: {url : productImg.url , public_id : productImg.public_id} }, { new: true })
 
         } else {
             product = await Products.findByIdAndUpdate(req.params.id, req.body, { new: true })
@@ -345,6 +356,8 @@ const deleteProduct = async (req, res) => {
     try {
         const product = await Products.findByIdAndDelete(req.params.id)
 
+        await deleteCloudinaryImg(product.product_img.public_id)
+        
         if (!product) {
             return res.status(400).json({
                 success: false,

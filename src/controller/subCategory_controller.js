@@ -111,9 +111,9 @@ const getSubCategory = async (req, res) => {
 const addSubCategory = async (req, res) => {
     try {
 
-        console.log(req.body, req.file);
+        console.log("req.body, req.file",req.body, req.file);
 
-         const addImg = await cloudinaryUploadImg(req.file.path, "Subcategory")
+         const addImg = await cloudinaryUploadImg(req.file.path, "subcategory")
         
          console.log("addImg", addImg);
 
@@ -168,7 +168,7 @@ const putSubCategory = async (req, res) => {
 
             await deleteCloudinaryImg(subCategoryObj.subCat_img.public_id)
 
-            const updateImg = await cloudinaryUploadImg(req.file.path, "Subcategory")
+            const updateImg = await cloudinaryUploadImg(req.file.path, "subcategory")
         
             console.log("addImg", updateImg);
 
