@@ -458,7 +458,7 @@ const check_verification = async (req, res) => {
             return res.status(400)
                 .json({
                     success: false,
-                    message: 'otp not verify'
+                    message: 'otp is not verify'
                 })
         }
     } catch (error) {
