@@ -28,7 +28,18 @@ subcategory.get(
 // localhost:8000/api/v1/subcategory/post-subcategory
 subcategory.post(
     '/post-subcategory',
-    upload.single('subCat_img'),
+    (req,res,next) => {
+        upload.single('subCat_img')(req, res,function(err) {
+            if(err){
+                return res.status(400)
+                    .json({
+                        message :  err.message
+                    })
+            }
+            next()
+        })
+    }
+   ,
     validate(subCategory_validation.addsubCategory),
     subCategory_controller.addSubCategory
 )

@@ -32,7 +32,18 @@ router.get(
 //localhost:8000/api/v1/product/post-product
 router.post(
     '/post-product',
-    upload.single('product_img'),
+    (req,res,next) => {
+        upload.single('product_img')(req, res,function(err) {
+                if(err){
+                    return res.status(400)
+                        .json({
+                            message :  err.message
+                        })
+                }
+                next()
+            })
+        }
+    ,
     validate(Product_validation.addProduct),
     Product_controller.addProduct
 )

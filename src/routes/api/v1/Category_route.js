@@ -30,7 +30,18 @@ category.get(
 category.post(
     '/post-category',
     auth(["admin","employee","user"]),
-    upload.single('cat_img'),
+    (req,res,next) => {
+        upload.single('cat_img')(req, res,function(err) {
+            if(err){
+                return res.status(400)
+                    .json({
+                        message :  err.message
+                    })
+            }
+            next()
+        })
+    }
+    ,
     validate(Category_validation.addCategory),
     Category_controller.addCategory
 )
